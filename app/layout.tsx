@@ -1,5 +1,9 @@
-import ReactQueryWrapper from "../client/reactQueryWrapper";
-import RecoilRootWrapper from "../client/recoilRootWrapper";
+import "./global.css";
+import BodyStyleWrapper from "@/client/BodyStyleWrapper";
+import ReactQueryWrapper from "@/client/ReactQueryWrapper";
+import RecoilRootWrapper from "@/client/RecoilRootWrapper";
+import StyledComponentsRegistry from "./registry";
+import Translation from "@/client/Translation";
 
 export const metadata = {
   title: 'SCHEDULE - SSR',
@@ -7,7 +11,7 @@ export const metadata = {
 }
 
 export default function RootLayout({
-  children,
+  children
 }: {
   children: React.ReactNode
 }) {
@@ -40,9 +44,16 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <ReactQueryWrapper>
-          <RecoilRootWrapper>{children}</RecoilRootWrapper>
-        </ReactQueryWrapper>
+        <Translation locale="kr"/>
+          <ReactQueryWrapper>
+            <RecoilRootWrapper>
+              <StyledComponentsRegistry>
+                <BodyStyleWrapper>
+                  {children}
+                </BodyStyleWrapper>
+              </StyledComponentsRegistry>
+            </RecoilRootWrapper>
+          </ReactQueryWrapper>
       </body>
     </html>
   );

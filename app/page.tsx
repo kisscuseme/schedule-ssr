@@ -1,3 +1,5 @@
+import Schedule from "@/components/templates/Schedule";
+import SignIn from "@/components/templates/SignIn";
 import { checkLogin } from "@/services/firebase/auth";
 
 const Home = async () => {
@@ -9,7 +11,8 @@ const Home = async () => {
     })
   })();
   const data = await checkLogin();
-  return <div>{data ? data.displayName : "로그인이 필요합니다."}</div>;
+  if(data) return <Schedule/>
+  else return <SignIn/>
 }
 
 export default Home;

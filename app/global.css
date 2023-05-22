@@ -5,10 +5,12 @@
   font-style: normal;
 }
 
-body {
+.container,
+.container-fluid {
   font-family: 'GangwonEdu_OTFBoldA', 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   -webkit-tap-highlight-color: transparent;
   background-color: #f2f2f2;
+  min-height: 100vh;
 }
 
 input[type="date"]

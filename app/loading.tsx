@@ -1,4 +1,4 @@
-import { LoadingScreen } from '@/components/molecules/loadingScreen/LoadingScreen';
+import { LoadingScreen } from '@/components/molecules/LoadingScreen';
 
 const Loading = () => {
   return <LoadingScreen/>
