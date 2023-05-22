@@ -1,7 +1,7 @@
 import i18next from "i18next";
-import translationKR from '../locales/kr/translation.json';
-import translationEN from '../locales/en/translation.json';
-import localesJSON from '../locales/locales.json';
+import translationKR from '@/locales/kr/translation.json';
+import translationEN from '@/locales/en/translation.json';
+import localesJSON from '@/locales/locales.json';
 
 export default function Translation({
   locale  

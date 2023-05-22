@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Col, Container, Row, Spinner } from "react-bootstrap"
 import { styled } from "styled-components";
