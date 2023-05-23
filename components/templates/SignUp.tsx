@@ -1,16 +1,14 @@
 import { s } from "@/services/util/util";
 import { t } from "i18next";
-import { ReactNode } from "react";
 import SignUpForm from "../organisms/SignUpForm";
-import { DefaultContainer } from "../atoms/DefaultAtoms";
-import Title from "../molecules/Title";
+import { DefaultContainer, DefaultTitle } from "../atoms/DefaultAtoms";
 
 export default function SignUp() {
   return (
     <DefaultContainer>
-      <Title>
+      <DefaultTitle>
         {s(t("Create an account"))}
-      </Title>
+      </DefaultTitle>
       <SignUpForm
         emailPlaceholder={s(t("E-mail"))}
         namePlaceholder={s(t("Name"))}

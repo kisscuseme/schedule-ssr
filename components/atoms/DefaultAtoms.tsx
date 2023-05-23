@@ -23,4 +23,13 @@ export const DefaultButton = styled(Button)`
   float: right;
 `;
 
+export const GroupButton = styled(Button)`
+  margin: 10px;
+`;
+
 export const DefaultInput = styled(FormControl)``;
+
+export const DefaultTitle = styled.h3`
+  text-align: center;
+  padding: 30px 0;
+`;

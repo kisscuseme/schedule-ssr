@@ -1,5 +1,3 @@
-import { DropdownDataProps } from "@/components/atoms/dropdown/dropdown.props";
-import { t } from "i18next";
 import { ScheduleType } from "../firebase/firebase.type";
 
 const getDay = (date: string) => {
@@ -33,7 +31,11 @@ const getToday = () => {
 };
 
 const getYearList = () => {
-  const yearList: DropdownDataProps[] = [];
+  const yearList: {
+    key: string,
+    href: string,
+    label: string
+  }[] = [];
   const now = new Date();
   const year: number = now.getFullYear();
   const limitRange = 3;
@@ -71,6 +73,23 @@ const sortSchedulList = (before: ScheduleType, after: ScheduleType) => {
   }
 }
 
+const getYearRange = (selectedYear: string) => {
+  const yearList = getYearList();
+  let fromYear = selectedYear;
+  let toYear = selectedYear + "\uf8ff";
+  
+  if(selectedYear === yearList[yearList.length-1].key) {
+    fromYear = "0000";
+  }
+  else if(selectedYear === yearList[0].key) {
+    toYear = "9999" + "\uf8ff";
+  }
+  return {
+    fromYear: fromYear,
+    toYear: toYear
+  };
+}
+
 export {
   checkEmail,
   checkPassword,
@@ -80,4 +99,5 @@ export {
   getYearList,
   s,
   sortSchedulList,
+  getYearRange
 };

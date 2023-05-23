@@ -1,15 +1,14 @@
 import { s } from "@/services/util/util";
 import { t } from "i18next";
 import SignInForm from "../organisms/SignInForm";
-import Title from "../molecules/Title";
-import { DefaultContainer } from "../atoms/DefaultAtoms";
+import { DefaultContainer, DefaultTitle } from "../atoms/DefaultAtoms";
 
 export default function SignIn() {
   return (
     <DefaultContainer>
-      <Title>
+      <DefaultTitle>
         {s(t("Schedule Management"))}
-      </Title>
+      </DefaultTitle>
       <SignInForm
         emailPlaceholder={s(t("E-mail"))}
         passwordPlaceholder={s(t("Password"))}

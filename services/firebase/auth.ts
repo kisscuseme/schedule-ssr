@@ -2,6 +2,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, Us
 import { t } from "i18next";
 import { s } from "../util/util";
 import { firebaseAuth } from "./firebase";
+import { cookies } from "next/dist/client/components/headers";
 
 const signIn = async (email: string, password: string) => {
   try {
@@ -65,4 +66,4 @@ const checkLogin = async (): Promise<User | null> => {
   });
 }
 
-export { signIn, signUp, logOut, checkLogin }
+export { signIn, signUp, logOut, checkLogin };

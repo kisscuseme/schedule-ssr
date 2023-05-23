@@ -1,32 +1,32 @@
 "use client";
 
-import { Col, Row, Spinner } from "react-bootstrap"
+import { Col, Row } from "react-bootstrap"
 import { styled } from "styled-components";
 import { DefaultContainer } from "../atoms/DefaultAtoms";
 import { ReactNode } from "react";
 
-const LoadingRow = styled(Row)`
+const FullCenterRow = styled(Row)`
   height: 100vh;
 `;
 
-const LoadingCol = styled(Col)`
+const FullCenterCol = styled(Col)`
   width: 100vw;
   margin: auto;
   text-align: center;
 `;
 
-export const LoadingScreen = ({
+export const CenterScreen = ({
   children
 }: {
-  children?: ReactNode
+  children: ReactNode
 }) => {
   return (
     <DefaultContainer>
-      <LoadingRow>
-        <LoadingCol>
-          {children ? children : <Spinner animation="border"/>}
-        </LoadingCol>
-      </LoadingRow>
+      <FullCenterRow>
+        <FullCenterCol>
+          {children}
+        </FullCenterCol>
+      </FullCenterRow>
     </DefaultContainer>
   )
 }

@@ -1,7 +1,14 @@
-import { LoadingScreen } from '@/components/molecules/LoadingScreen';
+"use client";
 
-const Loading = () => {
-  return <LoadingScreen/>
+import { CenterScreen } from '@/components/molecules/CenterScreen';
+import { Spinner } from 'react-bootstrap';
+
+const LoadingPage = () => {
+  return (
+    <CenterScreen>
+      <Spinner animation="border"/>
+    </CenterScreen>
+  );
 }
 
-export default Loading;
+export default LoadingPage;
