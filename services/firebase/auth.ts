@@ -15,9 +15,9 @@ const signIn = async (email: string, password: string) => {
     switch (error.code) {
       case "auth/user-not-found":
       case "auth/wrong-password":
-        return "Your email address or password is incorrect.";
+        throw "Your email address or password is incorrect.";
       default:
-        return "An error occurred while logging in." + "\n" + error.message;
+        throw "An error occurred while logging in." + "\n" + error.message;
     }
   }
 };
@@ -33,13 +33,13 @@ const signUp = async (email: string, password: string) => {
   } catch (error: any) {
     switch (error.code) {
       case "auth/weak-password":
-        return "Password must be 6 digits or longer.";
+        throw "Password must be 6 digits or longer.";
       case "auth/invalid-email":
-        return "Invalid email format.";
+        throw "Invalid email format.";
       case "auth/email-already-in-use":
-        return "This account has already been created.";
+        throw "This account has already been created.";
       default:
-        return "An error occurred while creating an account." + "\n" + error.message;
+        throw "An error occurred while creating an account." + "\n" + error.message;
     }
   }
 };
@@ -49,8 +49,7 @@ const logOut = async () => {
     await signOut(firebaseAuth);
     return true;
   } catch(error: any) {
-    console.log(s(t("An error occurred while logging out.")) + "\n" + error.message);
-    return false;
+    throw s(t("An error occurred while logging out.")) + "\n" + error.message;
   }
 }
 

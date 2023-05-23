@@ -1,6 +1,6 @@
-import SignUp from "@/components/templates/SignUp";
+import Schedule from "@/components/templates/Schedule";
 
-const SignUpPage = async () => {
+const SchedulePage = async () => {
   await (async () => {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -8,7 +8,7 @@ const SignUpPage = async () => {
       }, 2000);
     })
   })();
-  return <SignUp/>
+  return <Schedule/>
 }
 
-export default SignUpPage;
+export default SchedulePage;

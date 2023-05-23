@@ -1,22 +1,23 @@
 import { s } from "@/services/util/util";
 import { t } from "i18next";
 import { ReactNode } from "react";
-import DefaultPage from "../molecules/DefaultPage";
+import SignUpForm from "../organisms/SignUpForm";
+import { DefaultContainer } from "../atoms/DefaultAtoms";
+import Title from "../molecules/Title";
 
 export default function SignUp() {
-  const components: ReactNode[] = [
-    <input key="sign-up-email"/>,
-    <input key="sign-up-name"/>,
-    <input key="sign-up-password"/>,
-    <input key="sign-up-reconfirm-password"/>,
-    <button key="sign-up-submit">{s(t("Sign Up"))}</button>
-  ];
-
   return (
-    <DefaultPage
-      topBar={"test"}
-      title={s(t("Create an account"))}
-      contents={components}
-    />
+    <DefaultContainer>
+      <Title>
+        {s(t("Create an account"))}
+      </Title>
+      <SignUpForm
+        emailPlaceholder={s(t("E-mail"))}
+        namePlaceholder={s(t("Name"))}
+        passwordPlaceholder={s(t("Password"))}
+        reconfirmPasswordPlaceholder={s(t("Reconfirm Password"))}
+        signUpButtonText={s(t("Create"))}
+      />
+    </DefaultContainer>
   );
 }

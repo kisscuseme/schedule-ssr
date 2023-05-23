@@ -1,19 +1,26 @@
-import { s } from "@/services/util/util";
-import { t } from "i18next";
-import { ReactNode } from "react";
-import DefaultPage from "../molecules/DefaultPage";
+import ScheduleList from "../organisms/ScheduleList";
+import { DefaultContainer } from "../atoms/DefaultAtoms";
+import { ScheduleType } from "@/services/firebase/firebase.type";
 
 export default function Schedule() {
-  const components: ReactNode[] = [
-    <div key="1">2020.01.01({s(t("월"))}) 테스트1</div>,
-    <div key="2">2021.02.01({s(t("화"))}) 테스트2</div>,
-    <div key="3">2022.03.01({s(t("수"))}) 테스트3</div>
+  const scheduleData: ScheduleType[] = [
+    {
+      id: "1",
+      date: "2020.01.01",
+      content: "테스트1"
+    },
+    {
+      id: "2",
+      date: "2021.02.02",
+      content: "테스트2"
+    }
   ];
 
   return (
-    <DefaultPage
-      topBar={"test"}
-      contents={components}
-    />
+    <DefaultContainer>
+      <ScheduleList
+        scheduleData={scheduleData}
+      />
+    </DefaultContainer>
   );
 }

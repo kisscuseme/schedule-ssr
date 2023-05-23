@@ -1,18 +1,15 @@
-import Schedule from "@/components/templates/Schedule";
-import SignIn from "@/components/templates/SignIn";
-import { checkLogin } from "@/services/firebase/auth";
+"use client";
 
-const Home = async () => {
-  await (async () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(true);
-      }, 2000);
-    })
-  })();
-  const data = await checkLogin();
-  if(data) return <Schedule/>
-  else return <SignIn/>
+import { checkLogin } from "@/services/firebase/auth";
+import { useEffect } from "react";
+
+const Home = () => {
+  useEffect(() => {
+    checkLogin().then((data) => {
+      if(data) window.location.replace("/schedule");
+      else window.location.replace("/signin");
+    });
+  }, []);
 }
 
 export default Home;
