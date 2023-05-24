@@ -2,7 +2,7 @@ import "./global.css";
 import ReactQueryWrapper from "@/components/organisms/ReactQueryWrapper";
 import RecoilRootWrapper from "@/components/organisms/RecoilRootWrapper";
 import StyledComponentsRegistry from "./registry";
-import Translation from "@/components/organisms/Translation";
+import TranslationFromServer from "@/components/organisms/TranslationFromServer";
 
 export const metadata = {
   title: 'SCHEDULE - SSR',
@@ -46,14 +46,14 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <Translation locale="kr"/>
-          <ReactQueryWrapper>
-            <RecoilRootWrapper>
-              <StyledComponentsRegistry>
-                {children}
-              </StyledComponentsRegistry>
-            </RecoilRootWrapper>
-          </ReactQueryWrapper>
+        <TranslationFromServer locale="kr"/>
+        <ReactQueryWrapper>
+          <RecoilRootWrapper>
+            <StyledComponentsRegistry>
+              {children}
+            </StyledComponentsRegistry>
+          </RecoilRootWrapper>
+        </ReactQueryWrapper>
       </body>
     </html>
   );
