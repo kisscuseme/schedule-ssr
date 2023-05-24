@@ -1,16 +1,14 @@
-import { credential, initializeApp } from 'firebase-admin';
-import { getApps, getApp } from 'firebase-admin/app';
+import * as admin from 'firebase-admin';
 
-const firebaseAdminConfig = {
+const firebaseAdminConfig = !admin.apps.length ? {
   "projectId": process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  "privateKey": (process.env.NEXT_PUBLIC_FIREBASE_PRIVATE_KEY as string).replace(/\\n/g, '\n'),
+  "privateKey": (process.env.NEXT_PUBLIC_FIREBASE_PRIVATE_KEY as string).replaceAll('\\n', '\n'),
   "clientEmail": process.env.NEXT_PUBLIC_FIREBASE_CLIENT_EMAIL
-}
+} : {};
 
-const firebaseAdminApp = !getApps().length ? initializeApp({
-  credential: credential.cert(firebaseAdminConfig),
+const firebaseAdminApp = !admin.apps.length ? admin.initializeApp({
+  credential: admin.credential.cert(firebaseAdminConfig),
   databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
-}) : getApp();
-getApps
+}) : admin.app();
 
-export { firebaseAdminApp }
+export { admin, firebaseAdminApp }

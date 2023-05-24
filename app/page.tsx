@@ -17,9 +17,11 @@ const Home = () => {
           name: data?.displayName||"",
           email: data?.email||""
         });
-        window.location.replace(`/schedule/${data.uid}`);
+        document.cookie = `token=${await data.getIdToken()}`;
+        window.location.replace("/schedule");
       } else {
         setUserInfo(null);
+        document.cookie = "";
         window.location.replace("/signin");
       }
     }).catch((error) => {
