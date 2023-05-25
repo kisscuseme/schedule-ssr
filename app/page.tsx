@@ -1,7 +1,6 @@
 "use client";
 
 import { checkLogin } from "@/services/firebase/auth";
-import { firebaseAuth } from "@/services/firebase/firebase";
 import { userInfoState } from "@/states/states";
 import { useEffect } from "react";
 import { useRecoilState } from "recoil";
@@ -29,15 +28,6 @@ const Home = () => {
     });
     
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    const refreshToken = setInterval(async () => {
-      const { currentUser } = firebaseAuth;
-      if (currentUser) await currentUser.getIdToken(true);
-    }, 10 * 60 * 1000);
-
-    return () => clearInterval(refreshToken);
   }, []);
 }
 

@@ -1,7 +1,7 @@
 import { getReformDate } from "../util/util";
 import { ScheduleType, WhereConfigType } from "./firebase.type";
 import { admin } from "./firebase.admin";
-import { getFullPath } from "./db";
+import { getFullPath, limitNumber } from "./db";
 
 const makeRangeQueryFromServer = (
   ref: admin.firestore.Query<admin.firestore.DocumentData>,
@@ -20,12 +20,11 @@ const makeRangeQueriesFromServer = (
 }
 
 const queryScheduleDataFromServer = async (whereConfig: WhereConfigType[], uid: string) => {
-  const limitNumber = 5;
   const fullPath = getFullPath(uid);
   const collectionRef = admin.firestore().collection(fullPath);
   const whereRef = makeRangeQueriesFromServer(collectionRef, whereConfig);
   const scheduleList: ScheduleType[] = [];
-  const querySnapshots = await whereRef.orderBy('date').limit(limitNumber).get();
+  const querySnapshots = await whereRef.orderBy("date", "desc").limit(limitNumber).get();
   querySnapshots.docs.forEach((result) => {
     const reformDate = getReformDate(result.data()["date"], ".");
     const reformToDate = result.data()["toDate"]?getReformDate(result.data()["toDate"], "."):undefined;
@@ -36,7 +35,7 @@ const queryScheduleDataFromServer = async (whereConfig: WhereConfigType[], uid: 
       content: result.data()["content"]
     });
   });
-  const nextLastVisible = scheduleList.length < limitNumber ? null : querySnapshots.docs[querySnapshots.docs.length - 1];
+  const nextLastVisible = scheduleList.length < limitNumber ? null : querySnapshots.docs[querySnapshots.docs.length - 1].id;
   return {
     lastVisible: nextLastVisible,
     dataList: scheduleList

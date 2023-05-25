@@ -1,58 +1,97 @@
-import { and, collection, doc, DocumentData, getDocs, limit, orderBy, query, QueryDocumentSnapshot, runTransaction, startAfter, where, writeBatch } from "firebase/firestore";
+import {
+  and,
+  collection,
+  doc,
+  DocumentData,
+  DocumentSnapshot,
+  getDoc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  QueryDocumentSnapshot,
+  runTransaction,
+  startAfter,
+  where,
+  writeBatch,
+} from "firebase/firestore";
 import { getReformDate } from "../util/util";
 import { firebaseDb } from "./firebase";
 import { ScheduleType, WhereConfigType } from "./firebase.type";
+
+const limitNumber = 3;
 
 const getFullPath = (uid: string) => {
   const language: string = "KR";
   const dbRootPath: string = "language/" + language;
   return dbRootPath + "/user/" + uid + "/schedule";
-}
+};
 
 const makeRangeQuery = (whereConfig: WhereConfigType[]) => {
   const conditions = [];
   for (const condition of whereConfig) {
-    conditions.push(where(condition.field, condition.operator, condition.value));
+    conditions.push(
+      where(condition.field, condition.operator, condition.value)
+    );
   }
   return and(...conditions);
-}
+};
 
-const queryScheduleData = async (whereConfig: WhereConfigType[], uid: string, lastVisible: QueryDocumentSnapshot<DocumentData> | null) => {
-  const limitNumber = 15;
+const getLastVisible = async (uid: string, docId: string) => {
+  return await getDoc(doc(firebaseDb, getFullPath(uid), docId));
+};
+
+const queryScheduleData = async (
+  whereConfig: WhereConfigType[],
+  uid: string,
+  lastVisible: QueryDocumentSnapshot<DocumentData> | DocumentSnapshot<DocumentData> | string | null
+) => {
   const fullPath = getFullPath(uid);
-  const currentQuery = lastVisible !== null ? query(
-    collection(firebaseDb, fullPath),
-    makeRangeQuery(whereConfig),
-    orderBy("date", "desc"),
-    startAfter(lastVisible),
-    limit(limitNumber)
-  ) : query(
-    collection(firebaseDb, fullPath),
-    makeRangeQuery(whereConfig),
-    orderBy("date", "desc"),
-    limit(limitNumber)
-  );
+  const currentQuery =
+    lastVisible !== null
+      ? query(
+          collection(firebaseDb, fullPath),
+          makeRangeQuery(whereConfig),
+          orderBy("date", "desc"),
+          startAfter(lastVisible),
+          limit(limitNumber)
+        )
+      : query(
+          collection(firebaseDb, fullPath),
+          makeRangeQuery(whereConfig),
+          orderBy("date", "desc"),
+          limit(limitNumber)
+        );
   const documentSnapshots = await getDocs(currentQuery);
   const scheduleList: ScheduleType[] = [];
   documentSnapshots.forEach((result) => {
     const reformDate = getReformDate(result.data()["date"], ".");
-    const reformToDate = result.data()["toDate"]?getReformDate(result.data()["toDate"], "."):undefined;
+    const reformToDate = result.data()["toDate"]
+      ? getReformDate(result.data()["toDate"], ".")
+      : undefined;
     scheduleList.push({
       id: result.id,
       date: reformDate,
       toDate: reformToDate,
-      content: result.data()["content"]
+      content: result.data()["content"],
     });
   });
 
-  const nextLastVisible = scheduleList.length < limitNumber ? null : documentSnapshots.docs[documentSnapshots.docs.length - 1];
+  const nextLastVisible =
+    scheduleList.length < limitNumber
+      ? null
+      : documentSnapshots.docs[documentSnapshots.docs.length - 1];
   return {
     lastVisible: nextLastVisible,
-    dataList: scheduleList
+    dataList: scheduleList,
   };
-}
+};
 
-const updateScheduleData = async (updateInfo: {uid: string, scheduleId: string, newSchedule: object}) => {
+const updateScheduleData = async (updateInfo: {
+  uid: string;
+  scheduleId: string;
+  newSchedule: object;
+}) => {
   try {
     await runTransaction(firebaseDb, async (transaction) => {
       const fullPath = getFullPath(updateInfo.uid);
@@ -63,17 +102,20 @@ const updateScheduleData = async (updateInfo: {uid: string, scheduleId: string, 
       }
       const updateSchedule = {
         ...scheduleDoc.data(),
-        ...updateInfo.newSchedule
-      }
+        ...updateInfo.newSchedule,
+      };
       transaction.update(scheduleDocRef, updateSchedule);
     });
     // console.log("Transaction successfully committed!");
   } catch (e) {
     console.log("Transaction failed: ", e);
   }
-}
+};
 
-const insertScheduleData = async (insertInfo: {uid: string, newSchedule: object}) => {
+const insertScheduleData = async (insertInfo: {
+  uid: string;
+  newSchedule: object;
+}) => {
   const fullPath = getFullPath(insertInfo.uid);
 
   // Get a new write batch
@@ -87,9 +129,12 @@ const insertScheduleData = async (insertInfo: {uid: string, newSchedule: object}
   await batch.commit();
 
   return docRef.id;
-}
+};
 
-const deleteScheduleData = async (deleteInfo: {uid: string, scheduleId: string}) => {
+const deleteScheduleData = async (deleteInfo: {
+  uid: string;
+  scheduleId: string;
+}) => {
   const fullPath = getFullPath(deleteInfo.uid);
 
   // Get a new write batch
@@ -100,7 +145,7 @@ const deleteScheduleData = async (deleteInfo: {uid: string, scheduleId: string})
 
   // Commit the batch
   await batch.commit();
-}
+};
 
 export {
   queryScheduleData,
@@ -108,4 +153,17 @@ export {
   updateScheduleData,
   insertScheduleData,
   deleteScheduleData,
+  limitNumber,
+  getLastVisible,
 };
+
+
+// data 수정이 필요한 경우
+// const temp = await getDocs(query(collection(firebaseDb, getFullPath(user?.uid||""))));
+// temp.docs.map((item) => {
+//   console.log(item.id, item.data());
+//   updateDoc(doc(firebaseDb, getFullPath(user?.uid||""), item.id), {
+//     ...item.data(),
+//     id: item.id
+//   });
+// });

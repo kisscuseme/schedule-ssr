@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import { ScheduleType } from "../firebase/firebase.type";
 
 const getDay = (date: string) => {
@@ -60,8 +61,8 @@ const checkPassword = (password: string) => {
   return passwordRegEx.test(password);
 };
 
-const s = (translationKey: string | undefined | null) => {
-  return translationKey || "";
+const l = (translationKey: string | undefined) => {
+  return t(translationKey || "")||translationKey;
 }
 
 const sortSchedulList = (before: ScheduleType, after: ScheduleType) => {
@@ -97,7 +98,7 @@ export {
   getReformDate,
   getToday,
   getYearList,
-  s,
+  l,
   sortSchedulList,
   getYearRange
 };

@@ -24,12 +24,11 @@ const SchedulePage = async () => {
     ], token.uid);
     const scheduleData = result.dataList;
     const lastVisible = result.lastVisible;
-    const lastVisibleStr = JSON.stringify(lastVisible);
   
     return (
       <Schedule
         scheduleData={scheduleData}
-        lastVisible={lastVisibleStr}
+        lastVisible={lastVisible}
       />
     );
   } else {

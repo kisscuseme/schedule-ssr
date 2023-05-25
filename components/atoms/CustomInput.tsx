@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { RefObject } from "react";
 import { FormControl, FormControlProps } from "react-bootstrap";
 import { styled } from "styled-components";
@@ -29,6 +29,8 @@ interface InputOwnProps {
 type InputProps = InputOwnProps & FormControlProps;
 
 const ClearButton = styled.button`
+  padding-left: 10px;
+  padding-top: 6px;
   position: absolute;
   font-weight: 700;
   border: none;
@@ -41,6 +43,10 @@ const ClearButton = styled.button`
   }
 `;
 
+const CustomFormControl = styled(FormControl)`
+  display: inline-block;
+`;
+
 /**
  * 기본 인풋 컴포넌트
  */
@@ -51,6 +57,7 @@ export const CustomInput = ({
   clearBtnRef,
   initValue,
   onClearButtonClick,
+  onChange,
   ...props
 }: InputProps) => {
 
@@ -63,10 +70,15 @@ export const CustomInput = ({
   }, [initValue]);
 
   return (
-    <>
-      <FormControl
+    <div style={clearButton ? {paddingRight:"25px"} : {}}>
+      <CustomFormControl
         type={type}
         placeholder={placeholder}
+        value = {text}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+          setText(e.currentTarget.value);
+          if(onChange) onChange(e);
+        }}
         {...props}
       />
       {clearButton && type !== "date" && text !== "" && (
@@ -81,6 +93,6 @@ export const CustomInput = ({
           X
         </ClearButton>
       )}
-    </>
+    </div>
   );
 };
