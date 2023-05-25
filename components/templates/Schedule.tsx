@@ -8,16 +8,15 @@ import { getLastVisible, queryScheduleData } from "@/services/firebase/db";
 import { getDay, getReformDate, getToday, getYearRange, l } from "@/services/util/util";
 import { useEffect, useState } from "react";
 import { Accordion, Button } from "react-bootstrap";
-import { t } from "i18next";
 import TranslationFromClient from "../organisms/TranslationFromClient";
-import { useRecoilValue } from "recoil";
-import { rerenderDataState } from "@/states/states";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { rerenderDataState, userInfoState } from "@/states/states";
 import { ScheduleInputForm } from "../organisms/ScheduleInputForm";
 import { ScheduleInputType } from "@/types/global.types";
 import { CenterCol } from "../atoms/CustomAtoms";
 import { ScheduleAddForm } from "../organisms/ScheduleAddForm";
 import { styled } from "styled-components";
-import { firebaseAuth } from "@/services/firebase/firebase";
+import { ScheduleEditForm } from "../organisms/ScheduleEditForm";
 
 interface ScheduleProps {
   scheduleData: ScheduleType[];
@@ -34,55 +33,63 @@ export default function Schedule({
 }: ScheduleProps) {
   const rerenderData = useRecoilValue(rerenderDataState);
   const [scheduleList, setScheduleList] = useState(scheduleData);
-  const [uid, setUid] = useState("");
   const [nextLastVisible,  setNextLastVisible] = useState<QueryDocumentSnapshot<DocumentData> | DocumentSnapshot<DocumentData> | string | null>(null);
-  const [scheduleInput, setScheduleInput] = useState<ScheduleInputType>({
-    fromDate: getToday(),
-    toDate: getToday(),
-    schedule: ""
-  });
+  const [userInfo, setUserInfo] = useRecoilState(userInfoState);
 
   const getNextData = async () => {
-    const selectedYear = getToday().substring(0,4);
-    const yearRange = getYearRange(selectedYear);
-
-    const data = await queryScheduleData([
-      {
-        field: "date",
-        operator: ">=",
-        value: yearRange.fromYear
-      },
-      {
-        field: "date",
-        operator: "<=",
-        value: yearRange.toYear
-      }
-    ], uid, nextLastVisible);
-    setNextLastVisible(data.lastVisible);
-    setScheduleList([...scheduleList, ...data.dataList]);
+    try{
+      const selectedYear = getToday().substring(0,4);
+      const yearRange = getYearRange(selectedYear);
+  
+      const data = await queryScheduleData([
+        {
+          field: "date",
+          operator: ">=",
+          value: yearRange.fromYear
+        },
+        {
+          field: "date",
+          operator: "<=",
+          value: yearRange.toYear
+        }
+      ], userInfo?.uid||"", nextLastVisible);
+      setNextLastVisible(data.lastVisible);
+      setScheduleList([...scheduleList, ...data.dataList]);
+    } catch(error: any) {
+      console.log(error);
+    }
   }
 
   useEffect(() => {
   },[rerenderData, scheduleList]);
 
   useEffect(() => {
-    checkLogin().then(async (user) => {
-      setUid(user?.uid||"");
-      if(lastVisible?.constructor === String) {
-        setNextLastVisible(await getLastVisible(user?.uid||"", lastVisible));
+    checkLogin().then(async (data) => {
+      try{
+        if(data) {
+          document.cookie = `token=${await data.getIdToken()}`;
+          if(!userInfo) {
+            setUserInfo({
+              uid: data?.uid||"",
+              name: data?.displayName||"",
+              email: data?.email||""
+            });
+          }
+          if(lastVisible?.constructor === String) {
+            setNextLastVisible(await getLastVisible(data?.uid||"", lastVisible));
+          }
+        } else {
+          document.cookie = "";
+          setUserInfo(null);
+        }
+      } catch(error: any) {
+        console.log(error);
       }
+
+    }).catch((error) => {
+      console.log(error);
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    const refreshToken = setInterval(async () => {
-      console.log("refresh token");
-      const { currentUser } = firebaseAuth;
-      if (currentUser) await currentUser.getIdToken(true);
-    }, 1 * 60 * 1000);
-
-    return () => clearInterval(refreshToken);
   }, []);
 
   return (
@@ -117,10 +124,9 @@ export default function Schedule({
                     {getReformDate(value?.date||"", ".")}({l(getDay(value?.date||""))}) {value?.content}
                   </Accordion.Header>
                   <Accordion.Body>
-                    <ScheduleInputForm
-                      scheduleInput={scheduleInput}
-                      setScheduleInput={setScheduleInput}
-                      scheduleInputPlaceholder={value?.content}
+                    <ScheduleEditForm
+                      beforeSchedule={value}
+                      scheduleList={scheduleData}
                     />
                   </Accordion.Body>
                 </Accordion.Item>

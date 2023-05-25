@@ -61,8 +61,8 @@ const checkPassword = (password: string) => {
   return passwordRegEx.test(password);
 };
 
-const l = (translationKey: string | undefined) => {
-  return t(translationKey || "")||translationKey;
+const l = (translationKey: string, options?: object) => {
+  return t(translationKey || "", options?options:{})||translationKey;
 }
 
 const sortSchedulList = (before: ScheduleType, after: ScheduleType) => {

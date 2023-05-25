@@ -1,5 +1,4 @@
-import { ChangeEvent, useEffect, useState } from "react";
-import { RefObject } from "react";
+import { ChangeEvent, HTMLProps, RefObject, useEffect, useState } from "react";
 import { FormControl, FormControlProps } from "react-bootstrap";
 import { styled } from "styled-components";
 
@@ -26,7 +25,7 @@ interface InputOwnProps {
   initValue?: string;
 }
 
-type InputProps = InputOwnProps & FormControlProps;
+type InputProps = InputOwnProps & FormControlProps & HTMLProps<HTMLInputElement>;
 
 const ClearButton = styled.button`
   padding-left: 10px;
@@ -61,7 +60,7 @@ export const CustomInput = ({
   ...props
 }: InputProps) => {
 
-  const [text, setText] = useState<string | number | string[] | undefined>(initValue||"");
+  const [text, setText] = useState(initValue||"");
 
   useEffect(() => {
     if(initValue !== "") {

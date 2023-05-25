@@ -1,6 +1,5 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, User } from "firebase/auth";
-import { t } from "i18next";
-import { s } from "../util/util";
+import { l } from "../util/util";
 import { firebaseAuth } from "./firebase";
 
 const signIn = async (email: string, password: string) => {
@@ -49,7 +48,7 @@ const logOut = async () => {
     await signOut(firebaseAuth);
     return true;
   } catch(error: any) {
-    throw s(t("An error occurred while logging out.")) + "\n" + error.message;
+    throw l("An error occurred while logging out.") + "\n" + error.message;
   }
 }
 

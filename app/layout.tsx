@@ -3,6 +3,8 @@ import ReactQueryWrapper from "@/components/organisms/ReactQueryWrapper";
 import RecoilRootWrapper from "@/components/organisms/RecoilRootWrapper";
 import StyledComponentsRegistry from "./registry";
 import TranslationFromServer from "@/components/organisms/TranslationFromServer";
+import { Alert } from "@/components/molecules/Alert";
+import ShowAlert from "@/components/organisms/ShowAlert";
 
 export const metadata = {
   title: 'SCHEDULE - SSR',
@@ -51,6 +53,7 @@ export default function RootLayout({
           <RecoilRootWrapper>
             <StyledComponentsRegistry>
               {children}
+              <ShowAlert/>
             </StyledComponentsRegistry>
           </RecoilRootWrapper>
         </ReactQueryWrapper>

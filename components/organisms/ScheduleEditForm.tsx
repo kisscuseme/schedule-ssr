@@ -1,14 +1,15 @@
+"use client";
+
 import { Col, Row, useAccordionButton } from "react-bootstrap";
 import { EventHandler, SyntheticEvent, useEffect, useRef, useState } from "react";
 import { ScheduleType } from "@/services/firebase/firebase.type";
 import { deleteScheduleData, updateScheduleData } from "@/services/firebase/db";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { reloadDataState, rerenderDataState, resetClearButtonState, scheduleAccordionActiveState, showModalState, userInfoState } from "@/states/states";
-import { getReformDate, s, sortSchedulList } from "@/services/util/util";
+import { getReformDate, l, sortSchedulList } from "@/services/util/util";
 import { ScheduleInputForm } from "./ScheduleInputForm";
 import { ScheduleInputType } from "@/types/global.types";
 import { useMutation } from "@tanstack/react-query";
-import { t } from "i18next";
 import { DefaultButton } from "../atoms/DefaultAtoms";
 
 interface ScheduleEditFromProps {
@@ -72,26 +73,26 @@ export const ScheduleEditForm = ({
     if(scheduleInput.schedule === "") {
       setShowModal({
         show: true,
-        title: s(t("Check")),
-        content: s(t("Please enter your content."))
+        title: l("Check"),
+        content: l("Please enter your content.")
       });  
     } else if(scheduleInput.fromDate === "" || scheduleInput.toDate === "") {
       setShowModal({
         show: true,
-        title: s(t("Check")),
-        content: s(t("Please enter a date."))
+        title: l("Check"),
+        content: l("Please enter a date.")
       });
     } else if(scheduleInput.schedule === beforeSchedule?.content && getReformDate(scheduleInput.fromDate,"-") === getReformDate(beforeSchedule?.date||"", "-") && getReformDate(scheduleInput.toDate,"-") === getReformDate(beforeSchedule?.toDate||"", "-")){
       setShowModal({
         show: true,
-        title: s(t("Check")),
-        content: s(t("Everything is the same."))
+        title: l("Check"),
+        content: l("Everything is the same.")
       });
     } else {
       setShowModal({
         show: true,
-        title: s(t("Check")),
-        content: s(t("Are you sure you want to edit?")),
+        title: l("Check"),
+        content: l("Are you sure you want to edit?"),
         confirm: () => {
           changeScheduleMutation.mutate({
             uid: userInfo?.uid||"",
@@ -127,8 +128,8 @@ export const ScheduleEditForm = ({
   const deleteSchedule = (event: SyntheticEvent<any, Event>, eventHandler: EventHandler<SyntheticEvent<any, Event>>) => {
     setShowModal({
       show: true,
-      title: s(t("Caution")),
-      content: s(t("Are you sure you want to delete?")),
+      title: l("Caution"),
+      content: l("Are you sure you want to delete?"),
       confirm: () => {
         deleteScheduleMutation.mutate({
           uid: userInfo?.uid||"",
@@ -151,7 +152,7 @@ export const ScheduleEditForm = ({
           <DefaultButton
             onClick={resetChange}
           >
-            {s(t("Reset"))}
+            {l("Reset")}
           </DefaultButton>
         </Col>
         <Col>
@@ -160,7 +161,7 @@ export const ScheduleEditForm = ({
               changeSchedule(e, closeAccordion);
             }}
           >
-            {s(t("Edit"))}
+            {l("Edit")}
           </DefaultButton>
         </Col>
         <Col>
@@ -169,13 +170,13 @@ export const ScheduleEditForm = ({
               deleteSchedule(e, closeAccordion);
             }}
           >
-            {s(t("Delete"))}
+            {l("Delete")}
           </DefaultButton>
         </Col>
       </Row>
       <div className="hidden-button">
         <DefaultButton
-          btnRef={closeAccordionButtonRef}
+          ref={closeAccordionButtonRef}
           onClick={(e: SyntheticEvent<HTMLButtonElement, Event>) => {
             closeAccordion(e);
           }}
