@@ -39,7 +39,7 @@ export default function Schedule({
   const setIsLogedIn = useSetRecoilState<LoginStateType>(isLogedInState);
   const [selectedYear, setSelectedYear] = useRecoilState<string | null>(selectedYearState);
   const setShowModal = useSetRecoilState(showModalState);
-  const [noMoreData, setNoMoreData] = useState<boolean>(true);
+  const [noMoreData, setNoMoreData] = useState<boolean>(false);
   const [reloadData, setReloadData] = useRecoilState(reloadDataState);
   const [allowLoading, setAllowLoading] = useState<boolean>(true);
   const [rerenderData, setRerenderData] = useRecoilState(rerenderDataState);
@@ -69,7 +69,6 @@ export default function Schedule({
           }
           if(lastVisibleFromServer?.constructor === String) {
             setNextLastVisible(await getLastVisible(data?.uid||"", lastVisibleFromServer));
-            setNoMoreData(false);
           }
         } else {
           document.cookie = "";
@@ -95,7 +94,6 @@ export default function Schedule({
       // 현재의 스크롤 값을 저장
       lastScrollY = scrollY;
     });
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
