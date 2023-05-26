@@ -39,7 +39,7 @@ export default function Schedule({
   const setIsLogedIn = useSetRecoilState<LoginStateType>(isLogedInState);
   const [selectedYear, setSelectedYear] = useRecoilState<string | null>(selectedYearState);
   const setShowModal = useSetRecoilState(showModalState);
-  const [noMoreData, setNoMoreData] = useState<boolean>(false);
+  const [noMoreData, setNoMoreData] = useState<boolean>(true);
   const [reloadData, setReloadData] = useRecoilState(reloadDataState);
   const [allowLoading, setAllowLoading] = useState<boolean>(true);
   const [rerenderData, setRerenderData] = useRecoilState(rerenderDataState);
@@ -74,7 +74,7 @@ export default function Schedule({
   const { isLoading, refetch } = useQuery(["loadSchedule"], getScheduleData, {
     refetchOnWindowFocus: false,
     retry: 0,
-    onSuccess: data => {
+    onSuccess: (data) => {
       if(data) {
         lastVisible && !noMoreData ? setScheduleList([...scheduleList, ...data.dataList]) : setScheduleList(data.dataList);
         data.lastVisible ? setNextLastVisible(data.lastVisible) : setNoMoreData(true);
@@ -106,6 +106,7 @@ export default function Schedule({
           }
           if(lastVisibleFromServer?.constructor === String) {
             setNextLastVisible(await getLastVisible(data?.uid||"", lastVisibleFromServer));
+            setNoMoreData(false);
           }
         } else {
           document.cookie = "";
