@@ -95,7 +95,23 @@ export default function Schedule({
       lastScrollY = scrollY;
     });
 
-    setAccordionChildren(scheduleList.map((value) => (
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    setYearSelectDropdown(
+      <CustomDropdown
+        initText={getToday().substring(0,4)}
+        items={yearList}
+        onClickItemHandler={selectYear}
+        id="schedule-year-dropdown"
+      />
+    );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[yearList]);
+
+  const makeAccordionChildren = (scheduleList: ScheduleType[]) => {
+    return scheduleList.map((value) => (
       <Accordion.Item key={value?.id} eventKey={value?.id || ""}>
         <Accordion.Header>
           <Col xs={5}>
@@ -121,21 +137,8 @@ export default function Schedule({
           />
         </Accordion.Body>
       </Accordion.Item>
-    )));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    setYearSelectDropdown(
-      <CustomDropdown
-        initText={getToday().substring(0,4)}
-        items={yearList}
-        onClickItemHandler={selectYear}
-        id="schedule-year-dropdown"
-      />
-    );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[yearList]);
+    ));
+  }
 
   const getScheduleData = async () => {
     try {
@@ -167,7 +170,13 @@ export default function Schedule({
     retry: 0,
     onSuccess: (data) => {
       if(data) {
-        lastVisible && !noMoreData ? setScheduleList([...scheduleList, ...data.dataList]) : setScheduleList(data.dataList);
+        const tempList = [...scheduleList, ...data.dataList];
+        const uniqueList = tempList.filter((value1, index) => {
+          return tempList.findIndex((value2) => {
+            return value1?.id === value2?.id;
+          }) === index;
+        });
+        lastVisible && !noMoreData ? setScheduleList(uniqueList) : setScheduleList(data.dataList);
         data.lastVisible ? setNextLastVisible(data.lastVisible) : setNoMoreData(true);
   
         setAllowLoading(true);
@@ -181,7 +190,15 @@ export default function Schedule({
   });
 
   useEffect(() => {
-  },[rerenderData, scheduleList]);
+    setRerenderData(!rerenderData);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scheduleList]);
+
+  useEffect(() => {
+    scheduleList.sort(sortSchedulList);
+    setAccordionChildren(makeAccordionChildren(scheduleList));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[rerenderData]);
 
   const signOutMutation = useMutation(logOut, {
     onSuccess(data) {
@@ -227,12 +244,6 @@ export default function Schedule({
   const selectYear = (year: string) => {
     setSelectedYear(year);
   }
-
-  useEffect(() => {
-    scheduleList.sort(sortSchedulList);
-    setRerenderData(!rerenderData);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scheduleList]);
 
   useEffect(() => {
     if(selectedYear) {
