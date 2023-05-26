@@ -12,6 +12,7 @@ export const DefaultButton = forwardRef((props: ButtonProps, ref) => {
   const {children, ...otherProps} = props;
   return <StyledButton {...otherProps} ref={ref}>{children}</StyledButton>
 });
+DefaultButton.displayName = "DefaultButton";
 
 export const DefaultContainer = styled(Container)`
   background-color: transparent;

@@ -96,3 +96,4 @@ export const CustomInput = forwardRef(({
     </div>
   );
 });
+CustomInput.displayName = "CustomInput";
