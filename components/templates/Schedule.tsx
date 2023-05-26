@@ -32,7 +32,7 @@ export default function Schedule({
   scheduleDataFromServer,
   lastVisibleFromServer
 }: ScheduleProps) {
-  const [scheduleList, setScheduleList] = useState(scheduleDataFromServer);
+  const [scheduleList, setScheduleList] = useState<ScheduleType[]>([]);
   const [lastVisible,  setLastVisible] = useState<QueryDocumentSnapshot<DocumentData> | DocumentSnapshot<DocumentData> | string | null>(null);
   const [nextLastVisible,  setNextLastVisible] = useState<QueryDocumentSnapshot<DocumentData> | DocumentSnapshot<DocumentData> | string | null>(null);
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
@@ -48,11 +48,12 @@ export default function Schedule({
     fromYear: "",
     toYear: "",
   });
-  const [yearList, setYearList] = useState<DropdownDataProps[] | null>(null);
+  const [yearList, setYearList] = useState<DropdownDataProps[]>([]);
   const [accordionChildren, setAccordionChildren] = useState<ReactNode>(<></>);
   const [yearSelectDropdown, setYearSelectDropdown] = useState<ReactNode>(<></>);
 
   useEffect(() => {
+    setScheduleList(scheduleDataFromServer);
     setYearList(getYearList());
     setYearRange(getYearRange(selectedYear||getToday().substring(0,4)));
     checkLogin().then(async (data) => {
@@ -127,7 +128,7 @@ export default function Schedule({
             }
           </Col>
           <Col>
-            <div>{value?.content}</div>
+            <div style={{wordBreak: "break-all"}}>{value?.content}</div>
           </Col>
         </Accordion.Header>
         <Accordion.Body>
