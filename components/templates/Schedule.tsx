@@ -6,7 +6,7 @@ import { checkLogin, logOut } from "@/services/firebase/auth";
 import { DocumentData, DocumentSnapshot, QueryDocumentSnapshot } from "firebase/firestore";
 import { getLastVisible, queryScheduleData } from "@/services/firebase/db";
 import { getDay, getReformDate, getToday, getYearList, getYearRange, l, sortSchedulList } from "@/services/util/util";
-import { useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { Accordion, Button, Col, Row, Spinner } from "react-bootstrap";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { isLogedInState, reloadDataState, rerenderDataState, selectedYearState, showModalState, userInfoState } from "@/states/states";
@@ -49,6 +49,7 @@ export default function Schedule({
     toYear: "",
   });
   const [yearList, setYearList] = useState<DropdownDataProps[] | null>(null);
+  const [accordionChildren, setAccordionChildren] = useState<ReactNode>(<></>);
 
   useEffect(() => {
     setYearList(getYearList());
@@ -92,6 +93,34 @@ export default function Schedule({
       // 현재의 스크롤 값을 저장
       lastScrollY = scrollY;
     });
+
+    setAccordionChildren(scheduleList.map((value) => (
+      <Accordion.Item key={value?.id} eventKey={value?.id || ""}>
+        <Accordion.Header>
+          <Col xs={5}>
+            <Row>
+              <div>{getReformDate(value?.date || "", ".")}({l(getDay(value?.date || ""))})</div>
+            </Row>
+            {
+              value?.toDate && value?.date !== value?.toDate && <>
+                <Row>
+                  <div>{"~ " + value?.toDate} {`(${l(getDay(value?.toDate||""))})`}</div>
+                </Row>
+              </>
+            }
+          </Col>
+          <Col>
+            <div>{value?.content}</div>
+          </Col>
+        </Accordion.Header>
+        <Accordion.Body>
+          <ScheduleEditForm
+            beforeSchedule={value}
+            scheduleList={scheduleList}
+          />
+        </Accordion.Body>
+      </Accordion.Item>
+    )));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -243,37 +272,7 @@ export default function Schedule({
         <DefaultCol>
           <ListWrapper>
             <Accordion defaultActiveKey="">
-              {scheduleList.map((value) => (
-                <Accordion.Item key={value?.id} eventKey={value?.id || ""}>
-                  <Accordion.Header>
-                    <>
-                      <Col xs={5}>
-                        <Row>
-                          <div>{getReformDate(value?.date || "", ".")}({l(getDay(value?.date || ""))})</div>
-                        </Row>
-                        {
-                          value?.toDate && value?.date !== value?.toDate && <>
-                            <Row>
-                              <div>{"~ " + value?.toDate} {`(${l(getDay(value?.toDate||""))})`}</div>
-                            </Row>
-                          </>
-                        }
-                      </Col>
-                      <Col>
-                        <div>{value?.content}</div>
-                      </Col>
-                    </>
-                    {/* {getReformDate(value?.date || "", ".")}(
-                    {l(getDay(value?.date || ""))}) {value?.content} */}
-                  </Accordion.Header>
-                  <Accordion.Body>
-                    <ScheduleEditForm
-                      beforeSchedule={value}
-                      scheduleList={scheduleList}
-                    />
-                  </Accordion.Body>
-                </Accordion.Item>
-              ))}
+              {accordionChildren}
             </Accordion>
           </ListWrapper>
         </DefaultCol>

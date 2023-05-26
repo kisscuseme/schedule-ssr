@@ -22,9 +22,9 @@ export const ScheduleEditForm = ({
   scheduleList
 }: ScheduleEditFromProps) => {
   const [scheduleInput, setScheduleInput] = useState<ScheduleInputType>({
-    fromDate: (beforeSchedule?.date||"").substring(0,10).replaceAll(".","-"),
-    toDate: (beforeSchedule?.toDate||"").substring(0,10).replaceAll(".","-"),
-    schedule: beforeSchedule?.content||""
+    fromDate: "",
+    toDate: "",
+    schedule: ""
   });
   const userInfo = useRecoilValue(userInfoState);
   const setShowModal = useSetRecoilState(showModalState);
@@ -34,6 +34,15 @@ export const ScheduleEditForm = ({
   const [scheduleAccordionActive, setScheduleAccordionActive] = useRecoilState(scheduleAccordionActiveState);
   const [rerenderData, setRerenderData] = useRecoilState(rerenderDataState);
   const [resetClearButton, setResetClearButton] = useRecoilState(resetClearButtonState);
+
+  useEffect(() => {
+    setScheduleInput({
+      fromDate: (beforeSchedule?.date||"").substring(0,10).replaceAll(".","-"),
+      toDate: (beforeSchedule?.toDate||"").substring(0,10).replaceAll(".","-"),
+      schedule: beforeSchedule?.content||""
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if(beforeSchedule?.id === scheduleAccordionActive) {

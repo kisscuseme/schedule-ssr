@@ -15,6 +15,14 @@ interface ScheduleInputFormProps {
   initValue?: string
 }
 
+const InputRow = styled(Row)`
+  min-height: 50px;
+`;
+
+const InputCol = styled(Col)`
+  margin: auto;
+`;
+
 const MiddleCol = styled(Col)`
   max-width: 30px;
   margin-left: -3px !important;
@@ -90,39 +98,28 @@ export const ScheduleInputForm = ({
   }, [resetClearButton]);
 
   return (
-      <div className="schedule-input-form">
-        <style>
-          {`
-            .schedule-input-form .row {
-              min-height: 50px;
-            }
-    
-            .schedule-input-form .col {
-              margin: auto;
-            }
-          `}
-        </style>
-      <Row>
-        <Col>
+      <>
+      <InputRow>
+        <InputCol>
           <CustomInput
             type="date"
             value={scheduleInput.fromDate}
             onChange={selectFromDateHandler}
           />
-        </Col>
+        </InputCol>
         <MiddleCol>
           ~
         </MiddleCol>
-        <Col>
+        <InputCol>
           <CustomInput
             type="date"
             value={scheduleInput.toDate}
             onChange={selectToDateHandler}
           />
-        </Col>
-      </Row>
-      <Row>
-        <Col>
+        </InputCol>
+      </InputRow>
+      <InputRow>
+        <InputCol>
           <CustomInput
             placeholder={scheduleInputPlaceholder}
             type="text"
@@ -138,8 +135,8 @@ export const ScheduleInputForm = ({
               });
             }}
           />
-        </Col>
-      </Row>
-    </div>
+        </InputCol>
+      </InputRow>
+    </>
   )
 }

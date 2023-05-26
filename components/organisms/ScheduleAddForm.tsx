@@ -4,7 +4,7 @@ import { ScheduleType } from "@/services/firebase/firebase.type"
 import { Accordion, Col, Row } from "react-bootstrap"
 import { ScheduleInputForm } from "./ScheduleInputForm"
 import { getReformDate, getToday, l, sortSchedulList } from "@/services/util/util"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ScheduleInputType } from "@/types/global.types";
 import { DefaultButton } from "../atoms/DefaultAtoms";
 import { styled } from "styled-components";
@@ -28,10 +28,18 @@ export const ScheduleAddForm = ({
   const userInfo = useRecoilValue(userInfoState);
   const [rerenderData, setRerenderDataState] = useRecoilState(rerenderDataState);
   const [scheduleInput, setScheduleInput] = useState<ScheduleInputType>({
-    fromDate: getToday(),
-    toDate: getToday(),
+    fromDate: "",
+    toDate: "",
     schedule: ""
   });
+
+  useEffect(() => {
+    setScheduleInput({
+      fromDate: getToday(),
+      toDate: getToday(),
+      schedule: ""
+    })
+  }, []);
 
   const insertScheduleMutation = useMutation(insertScheduleData, {
     onSuccess(data) {
