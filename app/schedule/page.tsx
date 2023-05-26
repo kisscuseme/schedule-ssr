@@ -28,15 +28,9 @@ const SchedulePage = async () => {
       const lastVisible = result.lastVisible;
     
       return (
-        // <Schedule
-        //   scheduleDataFromServer={scheduleData}
-        //   lastVisibleFromServer={lastVisible}
-        // />
         <Schedule
-          scheduleDataFromServer={[{
-            id: result.lastVisible||"aaa",date:yearRange.toYear,content:token.uid||"xxx"
-          }]}
-          lastVisibleFromServer={""}
+          scheduleDataFromServer={scheduleData}
+          lastVisibleFromServer={lastVisible}
         />
       );
     } else {

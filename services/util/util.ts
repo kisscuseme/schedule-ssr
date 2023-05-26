@@ -26,8 +26,11 @@ const getReformDate = (date: string, dvsn: string) => {
 }
 
 const getToday = () => {
-  const dateArr = new Date().toLocaleDateString().replaceAll(" ", "").split(".");
-  const today = dateArr[0] + "-" + ("0" + dateArr[1]).slice(-2, 3) + "-" + ("0" + dateArr[2]).slice(-2, 3);
+  const now = new Date();
+  const year = now.getFullYear().toString();
+  const month = (now.getMonth() + 1).toString();
+  const date = now.getDate().toString();
+  const today = year + "-" + ("0" + month).slice(-2, 3) + "-" + ("0" + date).slice(-2, 3);
   return today;
 };
 
