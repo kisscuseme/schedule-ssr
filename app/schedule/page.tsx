@@ -34,7 +34,7 @@ const SchedulePage = async () => {
         // />
         <Schedule
           scheduleDataFromServer={[{
-            id: "1",date:"2020.12.12",content:cookies().get("token")?.value||"xxx"
+            id: result.lastVisible||"aaa",date:yearRange.toYear,content:token.uid||"xxx"
           }]}
           lastVisibleFromServer={""}
         />
