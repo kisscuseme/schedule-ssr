@@ -47,6 +47,7 @@ export const SignInForm = ({
   useEffect(() => {
     setEmail(savedEmail);
     reset({email: savedEmail});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [savedEmail]);
 
   useEffect(() => {
