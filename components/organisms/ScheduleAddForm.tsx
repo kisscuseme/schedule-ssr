@@ -21,6 +21,10 @@ const InputFormWrapper = styled.div`
   margin-bottom: 10px;
 `;
 
+const AccordionBody = styled(Accordion.Body)`
+  padding: 10px 20px;
+`;
+
 export const ScheduleAddForm = ({
   scheduleList
 }: ScheduleAddFromProps) => {
@@ -91,7 +95,7 @@ export const ScheduleAddForm = ({
           <Accordion.Header>
             <div color="#5f5f5f">{`[${l("Enter schedule")}]`}</div>
           </Accordion.Header>
-          <Accordion.Body>
+          <AccordionBody>
           <ScheduleInputForm
             scheduleInput={scheduleInput}
             setScheduleInput={setScheduleInput}
@@ -106,7 +110,7 @@ export const ScheduleAddForm = ({
               </DefaultButton>
             </Col>
           </Row>
-          </Accordion.Body>
+          </AccordionBody>
         </Accordion.Item>
       </Accordion>    
     </InputFormWrapper>

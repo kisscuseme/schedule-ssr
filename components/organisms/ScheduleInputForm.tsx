@@ -21,12 +21,12 @@ const InputRow = styled(Row)`
 
 const InputCol = styled(Col)`
   margin: auto;
+  padding: 0;
 `;
 
-const MiddleCol = styled(Col)`
+const MiddleCol = styled(InputCol)`
   max-width: 30px;
-  margin-left: -3px !important;
-  margin: auto;
+  text-align: center;
 `;
 
 export const ScheduleInputForm = ({

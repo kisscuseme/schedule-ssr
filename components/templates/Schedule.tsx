@@ -53,7 +53,6 @@ export default function Schedule({
   const [yearSelectDropdown, setYearSelectDropdown] = useState<ReactNode>(<></>);
 
   useEffect(() => {
-    console.log(scheduleDataFromServer);
     setScheduleList(scheduleDataFromServer);
     setYearList(getYearList());
     setYearRange(getYearRange(selectedYear||getToday().substring(0,4)));
