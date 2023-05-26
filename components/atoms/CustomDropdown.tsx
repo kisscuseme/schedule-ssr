@@ -28,7 +28,7 @@ interface DropdownOwnProps {
   /**
    * 데이터
    */
-  items: DropdownDataProps[];
+  items: DropdownDataProps[] | null;
   /**
    * Dropdown Item 위치
    */
@@ -99,7 +99,7 @@ export const CustomDropdown = ({
       </StyledDropdownToggle>
 
       <StyledDropdownMenu>
-        {items.map(item =>
+        {items && items.map(item =>
           <Dropdown.Item
             href={item["href"]}
             key={item["key"]}

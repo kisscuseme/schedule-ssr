@@ -16,7 +16,7 @@ import { styled } from "styled-components";
 import { ScheduleEditForm } from "../organisms/ScheduleEditForm";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { deleteUser } from "firebase/auth";
-import { CustomDropdown } from "../atoms/CustomDropdown";
+import { CustomDropdown, DropdownDataProps } from "../atoms/CustomDropdown";
 import TranslationFromClient from "../organisms/TranslationFromClient";
 
 interface ScheduleProps {
@@ -44,12 +44,61 @@ export default function Schedule({
   const [allowLoading, setAllowLoading] = useState<boolean>(true);
   const [rerenderData, setRerenderData] = useRecoilState(rerenderDataState);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const [yearRange, setYearRange] = useState({
+    fromYear: "",
+    toYear: "",
+  });
+  const [yearList, setYearList] = useState<DropdownDataProps[] | null>(null);
+
+  useEffect(() => {
+    setYearList(getYearList());
+    setYearRange(getYearRange(selectedYear||getToday().substring(0,4)));
+    checkLogin().then(async (data) => {
+      try{
+        if(data) {
+          document.cookie = `token=${await data.getIdToken()}`;
+          if(!userInfo) {
+            setUserInfo({
+              uid: data?.uid||"",
+              name: data?.displayName||"",
+              email: data?.email||""
+            });
+          }
+          if(lastVisibleFromServer?.constructor === String) {
+            setNextLastVisible(await getLastVisible(data?.uid||"", lastVisibleFromServer));
+            setNoMoreData(false);
+          }
+        } else {
+          document.cookie = "";
+          setUserInfo(null);
+        }
+      } catch(error: any) {
+        console.log(error);
+      }
+
+    }).catch((error) => {
+      console.log(error);
+    });
+
+    let lastScrollY = 0;
+    addEventListener("scroll", e => {
+      const scrollY = window.scrollY;
+      const direction = lastScrollY - scrollY;
+      if(direction < 0) {
+        if(document.body.scrollHeight < window.innerHeight + scrollY + 5) {
+          if(!noMoreData) buttonRef.current?.click();
+        }
+      }
+      // 현재의 스크롤 값을 저장
+      lastScrollY = scrollY;
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getScheduleData = async () => {
     try {
       if(userInfo?.uid) {
         setAllowLoading(false);  
-        const yearRange = getYearRange(selectedYear||getToday().substring(0,4));
         return queryScheduleData([
           {
             field: "date",
@@ -92,36 +141,6 @@ export default function Schedule({
   useEffect(() => {
   },[rerenderData, scheduleList]);
 
-  useEffect(() => {
-    checkLogin().then(async (data) => {
-      try{
-        if(data) {
-          document.cookie = `token=${await data.getIdToken()}`;
-          if(!userInfo) {
-            setUserInfo({
-              uid: data?.uid||"",
-              name: data?.displayName||"",
-              email: data?.email||""
-            });
-          }
-          if(lastVisibleFromServer?.constructor === String) {
-            setNextLastVisible(await getLastVisible(data?.uid||"", lastVisibleFromServer));
-            setNoMoreData(false);
-          }
-        } else {
-          document.cookie = "";
-          setUserInfo(null);
-        }
-      } catch(error: any) {
-        console.log(error);
-      }
-
-    }).catch((error) => {
-      console.log(error);
-    });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const signOutMutation = useMutation(logOut, {
     onSuccess(data) {
       if(data) {
@@ -163,8 +182,6 @@ export default function Schedule({
     });
   }
 
-  const data = getYearList();
-
   const selectYear = (year: string) => {
     setSelectedYear(year);
   }
@@ -174,22 +191,6 @@ export default function Schedule({
     setRerenderData(!rerenderData);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scheduleList]);
-
-  useEffect(() =>{
-    let lastScrollY = 0;
-    addEventListener("scroll", e => {
-      const scrollY = window.scrollY;
-      const direction = lastScrollY - scrollY;
-      if(direction < 0) {
-        if(document.body.scrollHeight < window.innerHeight + scrollY + 5) {
-          if(!noMoreData) buttonRef.current?.click();
-        }
-      }
-      // 현재의 스크롤 값을 저장
-      lastScrollY = scrollY;
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     if(selectedYear) {
@@ -227,7 +228,7 @@ export default function Schedule({
         <DefaultCol>
           <CustomDropdown
             initText={getToday().substring(0,4)}
-            items={data}
+            items={yearList}
             onClickItemHandler={selectYear}
             id="schedule-year-dropdown"
           />

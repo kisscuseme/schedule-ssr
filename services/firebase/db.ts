@@ -156,14 +156,3 @@ export {
   limitNumber,
   getLastVisible,
 };
-
-
-// data 수정이 필요한 경우
-// const temp = await getDocs(query(collection(firebaseDb, getFullPath(user?.uid||""))));
-// temp.docs.map((item) => {
-//   console.log(item.id, item.data());
-//   updateDoc(doc(firebaseDb, getFullPath(user?.uid||""), item.id), {
-//     ...item.data(),
-//     id: item.id
-//   });
-// });
