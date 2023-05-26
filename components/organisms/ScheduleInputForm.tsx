@@ -26,6 +26,7 @@ const InputCol = styled(Col)`
 const MiddleCol = styled(Col)`
   max-width: 30px;
   margin-left: -3px !important;
+  margin: auto;
 `;
 
 export const ScheduleInputForm = ({
