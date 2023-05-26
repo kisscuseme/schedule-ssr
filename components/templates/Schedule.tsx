@@ -50,6 +50,7 @@ export default function Schedule({
   });
   const [yearList, setYearList] = useState<DropdownDataProps[] | null>(null);
   const [accordionChildren, setAccordionChildren] = useState<ReactNode>(<></>);
+  const [yearSelectDropdown, setYearSelectDropdown] = useState<ReactNode>(<></>);
 
   useEffect(() => {
     setYearList(getYearList());
@@ -123,6 +124,18 @@ export default function Schedule({
     )));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    setYearSelectDropdown(
+      <CustomDropdown
+        initText={getToday().substring(0,4)}
+        items={yearList}
+        onClickItemHandler={selectYear}
+        id="schedule-year-dropdown"
+      />
+    );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[yearList]);
 
   const getScheduleData = async () => {
     try {
@@ -255,12 +268,7 @@ export default function Schedule({
           </DefaultButton>
         </DefaultCol>
         <DefaultCol>
-          <CustomDropdown
-            initText={getToday().substring(0,4)}
-            items={yearList}
-            onClickItemHandler={selectYear}
-            id="schedule-year-dropdown"
-          />
+          {yearSelectDropdown}
         </DefaultCol>
       </DefaultRow>
       <DefaultRow>
