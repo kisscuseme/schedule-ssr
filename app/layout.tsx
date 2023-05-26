@@ -3,7 +3,6 @@ import ReactQueryWrapper from "@/components/organisms/ReactQueryWrapper";
 import RecoilRootWrapper from "@/components/organisms/RecoilRootWrapper";
 import StyledComponentsRegistry from "./registry";
 import TranslationFromServer from "@/components/organisms/TranslationFromServer";
-import { Alert } from "@/components/molecules/Alert";
 import ShowAlert from "@/components/organisms/ShowAlert";
 
 export const metadata = {
@@ -17,9 +16,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html
-      lang="en"
-    >
+    <html lang="en">
       <head>
         <script
           src="https://cdn.jsdelivr.net/npm/react/umd/react.production.min.js"
@@ -48,12 +45,12 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <TranslationFromServer locale="kr"/>
+        <TranslationFromServer locale="kr" />
         <ReactQueryWrapper>
           <RecoilRootWrapper>
             <StyledComponentsRegistry>
               {children}
-              <ShowAlert/>
+              <ShowAlert />
             </StyledComponentsRegistry>
           </RecoilRootWrapper>
         </ReactQueryWrapper>

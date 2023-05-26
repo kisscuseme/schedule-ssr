@@ -1,7 +1,17 @@
 "use client";
 
-import { Button, Col, Container, FormControl, Row } from "react-bootstrap";
+import { forwardRef } from "react";
+import { Button, ButtonProps, Col, Container, FormControl, Row } from "react-bootstrap";
 import { styled } from "styled-components";
+
+const StyledButton = styled(Button)`
+  float: right;
+`;
+
+export const DefaultButton = forwardRef((props: ButtonProps, ref) => {
+  const {children, ...otherProps} = props;
+  return <StyledButton {...otherProps} ref={ref}>{children}</StyledButton>
+});
 
 export const DefaultContainer = styled(Container)`
   background-color: transparent;
@@ -17,10 +27,6 @@ export const DefaultRow = styled(Row)`
 
 export const DefaultCol = styled(Col)`
   margin: auto;
-`;
-
-export const DefaultButton = styled(Button)`
-  float: right;
 `;
 
 export const GroupButton = styled(Button)`

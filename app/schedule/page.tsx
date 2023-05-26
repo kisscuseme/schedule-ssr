@@ -29,15 +29,15 @@ const SchedulePage = async () => {
     
       return (
         <Schedule
-          scheduleData={scheduleData}
-          lastVisible={lastVisible}
+          scheduleDataFromServer={scheduleData}
+          lastVisibleFromServer={lastVisible}
         />
       );
     } else {
       return (
         <Schedule
-          scheduleData={[]}
-          lastVisible={""}
+          scheduleDataFromServer={[]}
+          lastVisibleFromServer={""}
         />
       );
     }

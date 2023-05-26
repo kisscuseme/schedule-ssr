@@ -1,4 +1,4 @@
-import { ChangeEvent, HTMLProps, RefObject, useEffect, useState } from "react";
+import React, { ChangeEvent, HTMLProps, RefObject, forwardRef, useEffect, useState } from "react";
 import { FormControl, FormControlProps } from "react-bootstrap";
 import { styled } from "styled-components";
 
@@ -18,7 +18,7 @@ interface InputOwnProps {
   /**
    * onClearButtonClick
    */
-  onClearButtonClick?: () => void;
+  onClearButtonClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   /**
    * initValue
    */
@@ -49,28 +49,28 @@ const CustomFormControl = styled(FormControl)`
 /**
  * 기본 인풋 컴포넌트
  */
-export const CustomInput = ({
+export const CustomInput = forwardRef(({
   type = "text",
   placeholder = "",
   clearButton,
   clearBtnRef,
-  initValue,
+  initValue = "",
   onClearButtonClick,
   onChange,
   ...props
-}: InputProps) => {
-
-  const [text, setText] = useState(initValue||"");
+}: InputProps, ref: React.ForwardedRef<HTMLInputElement>) => {
+  const [text, setText] = useState("");
 
   useEffect(() => {
     if(initValue !== "") {
-      setText(initValue||"");
+      setText(initValue);
     }
   }, [initValue]);
 
   return (
     <div style={clearButton ? {paddingRight:"25px"} : {}}>
       <CustomFormControl
+        ref={ref}
         type={type}
         placeholder={placeholder}
         value = {text}
@@ -82,11 +82,12 @@ export const CustomInput = ({
       />
       {clearButton && type !== "date" && text !== "" && (
         <ClearButton
+          type="button"
           tabIndex={-1}
           ref={clearBtnRef}
-          onClick={() => {
+          onClick={(e) => {
             setText("");
-            if(onClearButtonClick) onClearButtonClick();
+            if(onClearButtonClick) onClearButtonClick(e);
           }}
         >
           X
@@ -94,4 +95,4 @@ export const CustomInput = ({
       )}
     </div>
   );
-};
+});

@@ -5,16 +5,18 @@ import { checkEmail, checkPassword, l } from "@/services/util/util";
 import { showModalState } from "@/states/states";
 import { useMutation } from "@tanstack/react-query";
 import { sendEmailVerification, updateProfile, UserCredential } from "firebase/auth";
-import { useRouter } from "next/router";
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { Form } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { useSetRecoilState } from "recoil";
-import { DefaultButton, DefaultCol, DefaultInput, DefaultRow } from "../atoms/DefaultAtoms";
+import { DefaultButton, DefaultCol, DefaultRow } from "../atoms/DefaultAtoms";
+import { CustomInput } from "../atoms/CustomInput";
+import { CenterCol } from "../atoms/CustomAtoms";
+import TranslationFromClient from "./TranslationFromClient";
 
 interface SignUpFormProps {
   emailPlaceholder: string;
-  namePlaceholder: String;
+  namePlaceholder: string;
   passwordPlaceholder: string;
   reconfirmPasswordPlaceholder: string;
   signUpButtonText: string;
@@ -34,7 +36,6 @@ export default function SignUpForm({
   const [reconfirmPassword, setReconfirmPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const setShowModal = useSetRecoilState(showModalState);
-  const router = useRouter();
   const emailClearButtonRef = useRef<HTMLButtonElement>(null);
   const nameClearButtonRef = useRef<HTMLButtonElement>(null);
   const passwordClearButtonRef = useRef<HTMLButtonElement>(null);
@@ -90,21 +91,21 @@ export default function SignUpForm({
             title: l("Check"),
             content: `${l("Your account creation is complete.")} ${l("Please check the verification e-mail sent.")}`,
             callback: () => {
-              setName("");
-              setEmail("");
-              setPassword("");
-              setReconfirmPassword("");
-              router.replace("/");
+              reset();
+              window.location.href = "/";
             }
           });
         }
       } catch(error: any) {
-        console.log(error);
+        setErrorMsg(error.message);
       }
+    },
+    onError(error: any) {
+      setErrorMsg(error);
     }
   });
 
-  const signUpHandleSubmit = () => {
+  const signUpHandleSubmit = (email: string, name: string, password: string, reconfirmPassword: string) => {
     if(email === "") {
       setErrorMsg(l("Please enter your e-mail."));
     } else if(!checkEmail(email)) {
@@ -130,40 +131,107 @@ export default function SignUpForm({
 
   const enterKeyUpEventHandler = (e: KeyboardEvent<HTMLInputElement>) => {
     if(e.key === "Enter") {
-      signUpHandleSubmit();
+      signUpHandleSubmit(email, name, password, reconfirmPassword);
     }
   }
 
   return (
-    <Form>
+    <Form
+      onSubmit={handleSubmit((data) => {
+        signUpHandleSubmit(
+          data.email,
+          data.name,
+          data.password,
+          data.reconfirmPassword
+        );
+      })}
+    >
+      <TranslationFromClient locale="kr" />
       <DefaultRow>
         <DefaultCol>
-          <DefaultInput type="email" placeholder={emailPlaceholder} {...register("email")}/>
+          <CustomInput
+            {...register("email")}
+            type="email"
+            value={email}
+            onChange={emailChangeHandler}
+            clearButton={true}
+            clearBtnRef={emailClearButtonRef}
+            onClearButtonClick={() => {
+              setEmail("");
+            }}
+            onKeyUp={(e: KeyboardEvent<HTMLInputElement>) => {
+              enterKeyUpEventHandler(e);
+            }}
+            placeholder={emailPlaceholder}
+          />
         </DefaultCol>
       </DefaultRow>
       <DefaultRow>
         <DefaultCol>
-        <DefaultInput type="text" placeholder={namePlaceholder} {...register("name")}/>
+          <CustomInput
+            {...register("name")}
+            type="text"
+            value={name}
+            onChange={nameChangeHandler}
+            clearButton={true}
+            clearBtnRef={nameClearButtonRef}
+            onClearButtonClick={() => {
+              setName("");
+            }}
+            onKeyUp={(e: KeyboardEvent<HTMLInputElement>) => {
+              enterKeyUpEventHandler(e);
+            }}
+            placeholder={namePlaceholder}
+          />
         </DefaultCol>
       </DefaultRow>
       <DefaultRow>
         <DefaultCol>
-        <DefaultInput type="password" placeholder={passwordPlaceholder} {...register("password")}/>
+          <CustomInput
+            {...register("password")}
+            type="password"
+            value={password}
+            onChange={passwordChangeHandler}
+            clearButton={true}
+            clearBtnRef={passwordClearButtonRef}
+            onClearButtonClick={() => {
+              setPassword("");
+            }}
+            onKeyUp={(e: KeyboardEvent<HTMLInputElement>) => {
+              enterKeyUpEventHandler(e);
+            }}
+            placeholder={passwordPlaceholder}
+          />
         </DefaultCol>
       </DefaultRow>
       <DefaultRow>
         <DefaultCol>
-        <DefaultInput type="password" placeholder={reconfirmPasswordPlaceholder} {...register("reconfirmPassword")}/>
+          <CustomInput
+            {...register("reconfirmPassword")}
+            type="password"
+            value={reconfirmPassword}
+            onChange={reconfirmPasswordChangeHandler}
+            clearButton={true}
+            clearBtnRef={reconfirmPasswordClearButtonRef}
+            onClearButtonClick={() => {
+              setReconfirmPassword("");
+            }}
+            onKeyUp={(e: KeyboardEvent<HTMLInputElement>) => {
+              enterKeyUpEventHandler(e);
+            }}
+            placeholder={reconfirmPasswordPlaceholder}
+          />
         </DefaultCol>
       </DefaultRow>
       <DefaultRow>
         <DefaultCol>
-          <DefaultButton
-            type="submit"
-          >
-            {signUpButtonText}
-          </DefaultButton>
+          <DefaultButton type="submit">{signUpButtonText}</DefaultButton>
         </DefaultCol>
+      </DefaultRow>
+      <DefaultRow>
+        <CenterCol>
+          <div style={{ color: "hotpink" }}>{l(errorMsg)}</div>
+        </CenterCol>
       </DefaultRow>
     </Form>
   );

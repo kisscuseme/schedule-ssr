@@ -1,26 +1,27 @@
 "use client";
 
-import { ScheduleType } from "@/services/firebase/firebase.type";
+import { LoginStateType, ScheduleType } from "@/services/firebase/firebase.type";
 import { DefaultButton, DefaultCol, DefaultContainer, DefaultRow } from "../atoms/DefaultAtoms";
 import { checkLogin, logOut } from "@/services/firebase/auth";
 import { DocumentData, DocumentSnapshot, QueryDocumentSnapshot } from "firebase/firestore";
 import { getLastVisible, queryScheduleData } from "@/services/firebase/db";
-import { getDay, getReformDate, getToday, getYearRange, l } from "@/services/util/util";
-import { useEffect, useState } from "react";
-import { Accordion, Button } from "react-bootstrap";
-import TranslationFromClient from "../organisms/TranslationFromClient";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { rerenderDataState, userInfoState } from "@/states/states";
-import { ScheduleInputForm } from "../organisms/ScheduleInputForm";
-import { ScheduleInputType } from "@/types/global.types";
+import { getDay, getReformDate, getToday, getYearList, getYearRange, l, sortSchedulList } from "@/services/util/util";
+import { useEffect, useRef, useState } from "react";
+import { Accordion, Button, Col, Row, Spinner } from "react-bootstrap";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { isLogedInState, reloadDataState, rerenderDataState, selectedYearState, showModalState, userInfoState } from "@/states/states";
 import { CenterCol } from "../atoms/CustomAtoms";
 import { ScheduleAddForm } from "../organisms/ScheduleAddForm";
 import { styled } from "styled-components";
 import { ScheduleEditForm } from "../organisms/ScheduleEditForm";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { deleteUser } from "firebase/auth";
+import { CustomDropdown } from "../atoms/CustomDropdown";
+import TranslationFromClient from "../organisms/TranslationFromClient";
 
 interface ScheduleProps {
-  scheduleData: ScheduleType[];
-  lastVisible: string | null;
+  scheduleDataFromServer: ScheduleType[];
+  lastVisibleFromServer: string | null;
 }
 
 const ListWrapper = styled.div`
@@ -28,37 +29,65 @@ const ListWrapper = styled.div`
 `;
 
 export default function Schedule({
-  scheduleData,
-  lastVisible
+  scheduleDataFromServer,
+  lastVisibleFromServer
 }: ScheduleProps) {
-  const rerenderData = useRecoilValue(rerenderDataState);
-  const [scheduleList, setScheduleList] = useState(scheduleData);
+  const [scheduleList, setScheduleList] = useState(scheduleDataFromServer);
+  const [lastVisible,  setLastVisible] = useState<QueryDocumentSnapshot<DocumentData> | DocumentSnapshot<DocumentData> | string | null>(null);
   const [nextLastVisible,  setNextLastVisible] = useState<QueryDocumentSnapshot<DocumentData> | DocumentSnapshot<DocumentData> | string | null>(null);
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
+  const setIsLogedIn = useSetRecoilState<LoginStateType>(isLogedInState);
+  const [selectedYear, setSelectedYear] = useRecoilState<string | null>(selectedYearState);
+  const setShowModal = useSetRecoilState(showModalState);
+  const [noMoreData, setNoMoreData] = useState<boolean>(false);
+  const [reloadData, setReloadData] = useRecoilState(reloadDataState);
+  const [allowLoading, setAllowLoading] = useState<boolean>(true);
+  const [rerenderData, setRerenderData] = useRecoilState(rerenderDataState);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const getNextData = async () => {
-    try{
-      const selectedYear = getToday().substring(0,4);
-      const yearRange = getYearRange(selectedYear);
-  
-      const data = await queryScheduleData([
-        {
-          field: "date",
-          operator: ">=",
-          value: yearRange.fromYear
-        },
-        {
-          field: "date",
-          operator: "<=",
-          value: yearRange.toYear
-        }
-      ], userInfo?.uid||"", nextLastVisible);
-      setNextLastVisible(data.lastVisible);
-      setScheduleList([...scheduleList, ...data.dataList]);
+  const getScheduleData = async () => {
+    try {
+      if(userInfo?.uid) {
+        setAllowLoading(false);  
+        const yearRange = getYearRange(selectedYear||getToday().substring(0,4));
+        return queryScheduleData([
+          {
+            field: "date",
+            operator: ">=",
+            value: yearRange.fromYear
+          },
+          {
+            field: "date",
+            operator: "<=",
+            value: yearRange.toYear
+          }
+        ], userInfo?.uid||"", nextLastVisible);
+      } else {
+        return false;
+      }
     } catch(error: any) {
       console.log(error);
+      return false;
     }
   }
+
+  const { isLoading, refetch } = useQuery(["loadSchedule"], getScheduleData, {
+    refetchOnWindowFocus: false,
+    retry: 0,
+    onSuccess: data => {
+      if(data) {
+        lastVisible && !noMoreData ? setScheduleList([...scheduleList, ...data.dataList]) : setScheduleList(data.dataList);
+        data.lastVisible ? setNextLastVisible(data.lastVisible) : setNoMoreData(true);
+  
+        setAllowLoading(true);
+        setReloadData(false);
+      }
+    },
+    onError: (e: any) => {
+      console.log(e.message);
+      setAllowLoading(true);
+    }
+  });
 
   useEffect(() => {
   },[rerenderData, scheduleList]);
@@ -75,8 +104,8 @@ export default function Schedule({
               email: data?.email||""
             });
           }
-          if(lastVisible?.constructor === String) {
-            setNextLastVisible(await getLastVisible(data?.uid||"", lastVisible));
+          if(lastVisibleFromServer?.constructor === String) {
+            setNextLastVisible(await getLastVisible(data?.uid||"", lastVisibleFromServer));
           }
         } else {
           document.cookie = "";
@@ -92,26 +121,120 @@ export default function Schedule({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const signOutMutation = useMutation(logOut, {
+    onSuccess(data) {
+      if(data) {
+        window.localStorage.setItem("email", userInfo?.email||"");
+        setUserInfo(null);
+        setIsLogedIn(null);
+        window.location.href = "/";
+      }
+    },
+  });
+
+  const signOutHandler = () => {
+    setShowModal({
+      title: l("Check"),
+      content: l("Are you sure you want to log out?"),
+      show: true,
+      confirm: () => {
+        signOutMutation.mutate();
+      }
+    });
+  }
+
+  const deleteUserMutation = useMutation(deleteUser, {
+    onSuccess() {
+      window.location.href = "/";
+    }
+  });
+
+  const deleteUserHandler = () => {
+    setShowModal({
+      title: l("Check"),
+      content: l("Are you sure you want to delete your account?"),
+      show: true,
+      confirm: () => {
+        checkLogin().then((user) => {
+          if(user) deleteUserMutation.mutate(user);
+        });
+      }
+    });
+  }
+
+  const data = getYearList();
+
+  const selectYear = (year: string) => {
+    setSelectedYear(year);
+  }
+
+  useEffect(() => {
+    scheduleList.sort(sortSchedulList);
+    setRerenderData(!rerenderData);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scheduleList]);
+
+  useEffect(() =>{
+    let lastScrollY = 0;
+    addEventListener("scroll", e => {
+      const scrollY = window.scrollY;
+      const direction = lastScrollY - scrollY;
+      if(direction < 0) {
+        if(document.body.scrollHeight < window.innerHeight + scrollY + 5) {
+          if(!noMoreData) buttonRef.current?.click();
+        }
+      }
+      // 현재의 스크롤 값을 저장
+      lastScrollY = scrollY;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if(selectedYear) {
+      setReloadData(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedYear]);
+
+  useEffect(() => {
+    if(reloadData) {
+      setNoMoreData(false);
+      setLastVisible(null);
+      setScheduleList([]);
+    }
+    if(reloadData || lastVisible) {
+      refetch();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reloadData, lastVisible]);
+
   return (
     <DefaultContainer>
-      <TranslationFromClient locale="kr"/>
+      <TranslationFromClient locale="kr" />
       <DefaultRow>
         <DefaultCol>
-          <DefaultButton
-            onClick={async () => {
-              await logOut();
-              location.href = "/signin";
-            }}
-          >
-            Sign Out
+          <DefaultButton onClick={deleteUserHandler}>
+            {l("Delete User")}
           </DefaultButton>
+        </DefaultCol>
+        <DefaultCol>
+          <DefaultButton onClick={signOutHandler}>
+            {l("Sign Out")}
+          </DefaultButton>
+        </DefaultCol>
+        <DefaultCol>
+          <CustomDropdown
+            initText={getToday().substring(0,4)}
+            items={data}
+            onClickItemHandler={selectYear}
+            id="schedule-year-dropdown"
+          />
         </DefaultCol>
       </DefaultRow>
       <DefaultRow>
         <DefaultCol>
-          <ScheduleAddForm
-            scheduleList={scheduleList}
-          />
+          <ScheduleAddForm scheduleList={scheduleList} />
         </DefaultCol>
       </DefaultRow>
       <DefaultRow>
@@ -119,14 +242,32 @@ export default function Schedule({
           <ListWrapper>
             <Accordion defaultActiveKey="">
               {scheduleList.map((value) => (
-                <Accordion.Item key={value?.id} eventKey={value?.id||""}>
+                <Accordion.Item key={value?.id} eventKey={value?.id || ""}>
                   <Accordion.Header>
-                    {getReformDate(value?.date||"", ".")}({l(getDay(value?.date||""))}) {value?.content}
+                    <>
+                      <Col xs={5}>
+                        <Row>
+                          <div>{getReformDate(value?.date || "", ".")}({l(getDay(value?.date || ""))})</div>
+                        </Row>
+                        {
+                          value?.toDate && value?.date !== value?.toDate && <>
+                            <Row>
+                              <div>{"~ " + value?.toDate} {`(${l(getDay(value?.toDate||""))})`}</div>
+                            </Row>
+                          </>
+                        }
+                      </Col>
+                      <Col>
+                        <div>{value?.content}</div>
+                      </Col>
+                    </>
+                    {/* {getReformDate(value?.date || "", ".")}(
+                    {l(getDay(value?.date || ""))}) {value?.content} */}
                   </Accordion.Header>
                   <Accordion.Body>
                     <ScheduleEditForm
                       beforeSchedule={value}
-                      scheduleList={scheduleData}
+                      scheduleList={scheduleList}
                     />
                   </Accordion.Body>
                 </Accordion.Item>
@@ -135,17 +276,28 @@ export default function Schedule({
           </ListWrapper>
         </DefaultCol>
       </DefaultRow>
-      {nextLastVisible &&
+      {nextLastVisible && (
         <DefaultRow>
           <CenterCol>
-            <Button onClick={() => {
-              getNextData();
-            }}>
-              {l("Load More")}
-            </Button>
+            {scheduleList.length > 0 &&
+              !noMoreData &&
+              (allowLoading && !isLoading ? (
+                <Button
+                  ref={buttonRef}
+                  onClick={() => {
+                    setLastVisible(nextLastVisible);
+                  }}
+                >
+                  {l("Load More")}
+                </Button>
+              ) : (
+                <Button>
+                  <Spinner animation="border" />
+                </Button>
+              ))}
           </CenterCol>
         </DefaultRow>
-      }
+      )}
     </DefaultContainer>
   );
 }

@@ -14,9 +14,9 @@ export const isLogedInState = atom<LoginStateType>({
   default: null
 });
 
-export const selectedYearState = atom<string>({
+export const selectedYearState = atom<string | null>({
   key: "selectedYearState",
-  default: getToday().substring(0, 4)
+  default: null
 });
 
 export const reloadDataState = atom<boolean>({

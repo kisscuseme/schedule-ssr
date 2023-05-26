@@ -67,7 +67,6 @@ export const Alert = ({
       <Modal.Footer>
         {confirm && <Button
           onClick={() => {
-            if(confirm) confirm();
             setShowModal({
               title: "",
               content: "",
@@ -75,14 +74,13 @@ export const Alert = ({
               confirm: undefined,
               show: false
             });
-            
+            if(confirm) confirm();            
           }}
         >
           {l("Confirm")}
         </Button>}
         <Button
           onClick={() => {
-            if(callback) callback();
             setShowModal({
               title: "",
               content: "",
@@ -90,6 +88,7 @@ export const Alert = ({
               confirm: undefined,
               show: false
             });
+            if(callback) callback();
           }}
         >
           {l("Close")}

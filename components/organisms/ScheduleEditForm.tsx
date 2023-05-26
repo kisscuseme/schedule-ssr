@@ -146,6 +146,7 @@ export const ScheduleEditForm = ({
         scheduleInput={scheduleInput}
         setScheduleInput={setScheduleInput}
         scheduleInputPlaceholder={beforeSchedule?.content}
+        initValue={scheduleInput.schedule}
       />
       <Row>
         <Col>

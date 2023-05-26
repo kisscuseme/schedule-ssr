@@ -19,7 +19,7 @@ import { getReformDate } from "../util/util";
 import { firebaseDb } from "./firebase";
 import { ScheduleType, WhereConfigType } from "./firebase.type";
 
-const limitNumber = 3;
+const limitNumber = 15;
 
 const getFullPath = (uid: string) => {
   const language: string = "KR";

@@ -1,7 +1,7 @@
 "use client";
 
 import { Form } from "react-bootstrap";
-import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, KeyboardEvent, RefObject, useEffect, useRef, useState } from "react";
 import { checkEmail, l } from "@/services/util/util";
 import { firebaseAuth } from "@/services/firebase/firebase";
 import { sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
@@ -11,10 +11,11 @@ import { showModalState, userInfoState } from "@/states/states";
 import { signIn } from "@/services/firebase/auth";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { DefaultButton, DefaultCol, DefaultInput, DefaultRow, GroupButton } from "../atoms/DefaultAtoms";
+import { DefaultButton, DefaultCol, DefaultRow, GroupButton } from "../atoms/DefaultAtoms";
 import { CenterCol, SignInGroupButtonRow } from "../atoms/CustomAtoms";
 import { GroupButtonWrapper } from "../molecules/CustomMolecules";
 import { CustomInput } from "../atoms/CustomInput";
+import TranslationFromClient from "./TranslationFromClient";
 
 export const SignInForm = ({
   emailPlaceholder,
@@ -37,10 +38,16 @@ export const SignInForm = ({
   const emailClearButtonRef = useRef<HTMLButtonElement>(null);
   const passwordClearButtonRef = useRef<HTMLButtonElement>(null);
   const { register, handleSubmit, reset } = useForm();
+  const [savedEmail, setSavedEmail] = useState("");
 
   useEffect(() => {
-    setEmail(window.localStorage.getItem("email")||"");
+    setSavedEmail(window.localStorage.getItem("email") || "");
   }, []);
+
+  useEffect(() => {
+    setEmail(savedEmail);
+    reset({email: savedEmail});
+  }, [savedEmail]);
 
   useEffect(() => {
     if(password === "") {
@@ -57,9 +64,10 @@ export const SignInForm = ({
 
   const signInMutation = useMutation(signInWithEmail, {
     onSuccess(data) {
+      console.log("success");
       if(typeof data !== 'string') {
+        reset();
         if(data.user.emailVerified) {
-          reset();
           if(userInfo === null) {
             setUserInfo({
               uid: data.user.uid,
@@ -106,6 +114,9 @@ export const SignInForm = ({
       } else {
         setErrorMsg(data);
       }
+    },
+    onError(error: any) {
+      setErrorMsg(l(error));
     }
   });
 
@@ -169,8 +180,8 @@ export const SignInForm = ({
             resetPasswordMutation.mutate();
           }
         });
-      } catch (error) {
-        console.log(error);
+      } catch (error: any) {
+        setErrorMsg(error.message);
       }
     }
   };
@@ -187,7 +198,7 @@ export const SignInForm = ({
     setPassword(e.currentTarget.value);
   }
 
-  const enterKeyUpEventHandler = (e: KeyboardEvent<HTMLInputElement>, email: string, password: string) => {
+  const enterKeyUpEventHandler = (e: KeyboardEvent<HTMLInputElement>) => {
     if(e.key === "Enter") {
       signInHandleSubmit(email, password);
     }
@@ -199,23 +210,23 @@ export const SignInForm = ({
         signInHandleSubmit(data.email, data.password);
       })}
     >
+      <TranslationFromClient locale="kr" />
       <DefaultRow>
         <DefaultCol>
           <CustomInput
             {...register("email")}
             placeholder={emailPlaceholder}
             type="email"
-            initValue={email}
+            value={email}
+            initValue={savedEmail}
             onChange={emailChangeHandler}
             clearButton={true}
             clearBtnRef={emailClearButtonRef}
             onClearButtonClick={() => {
               setEmail("");
             }}
-            onKeyUp={(e: KeyboardEvent<HTMLInputElement>) =>{
-              handleSubmit((data) => {
-                enterKeyUpEventHandler(e, data.email, data.password);
-              });
+            onKeyUp={(e: KeyboardEvent<HTMLInputElement>) => {
+              enterKeyUpEventHandler(e);
             }}
           />
         </DefaultCol>
@@ -233,10 +244,8 @@ export const SignInForm = ({
             onClearButtonClick={() => {
               setPassword("");
             }}
-            onKeyUp={(e: KeyboardEvent<HTMLInputElement>) =>{
-              handleSubmit((data) => {
-                enterKeyUpEventHandler(e, data.email, data.password);
-              });
+            onKeyUp={(e: KeyboardEvent<HTMLInputElement>) => {
+              enterKeyUpEventHandler(e);
             }}
           />
         </DefaultCol>
@@ -249,16 +258,20 @@ export const SignInForm = ({
       <SignInGroupButtonRow>
         <CenterCol>
           <GroupButtonWrapper>
-            <GroupButton type="button" onClick={resetPasswordClickHandler}>{resetPasswordButtonText}</GroupButton>
-            <GroupButton
-              type="button"
-              onClick={signUpClickHandler}
-            >
+            <GroupButton type="button" onClick={resetPasswordClickHandler}>
+              {resetPasswordButtonText}
+            </GroupButton>
+            <GroupButton type="button" onClick={signUpClickHandler}>
               {signUpButtonText}
             </GroupButton>
           </GroupButtonWrapper>
         </CenterCol>
       </SignInGroupButtonRow>
+      <DefaultRow>
+        <CenterCol>
+          <div style={{ color: "hotpink" }}>{l(errorMsg)}</div>
+        </CenterCol>
+      </DefaultRow>
     </Form>
   );
 }
