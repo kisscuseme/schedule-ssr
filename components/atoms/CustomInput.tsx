@@ -51,6 +51,9 @@ const CustomFormControl = styled(FormControl)`
   &:focus {
     box-shadow: unset;
   }
+  &::placeholder {
+    color: #bfbfbf;
+  }
 `;
 
 /**
