@@ -1,28 +1,27 @@
 import { forwardRef } from "react";
 import { Button, ButtonProps } from "react-bootstrap";
-import { styled } from "styled-components";
+import { styled, ThemeProvider } from "styled-components";
 
 const StyledButton = styled(Button)`
-  --bs-btn-color: #000000;
-  --bs-btn-bg: transparent;
-  --bs-btn-border-color: transparent;
-  --bs-btn-hover-color: #000000;
-  --bs-btn-hover-bg: transparent;
-  --bs-btn-hover-border-color: transparent;
+  float: ${props => props.theme.align === "center" ? "none" : props.theme.align};
+  --bs-btn-color: ${props => props.theme.color};
+  --bs-btn-bg: ${props => props.theme.backgroundColor};
+  --bs-btn-border-color: ${props => props.theme.backgroundColor};
+  --bs-btn-hover-color: ${props => props.theme.color};
+  --bs-btn-hover-bg: ${props => props.theme.backgroundColor};
+  --bs-btn-hover-border-color: ${props => props.theme.backgroundColor};
   --bs-btn-focus-shadow-rgb: 49,132,253;
-  --bs-btn-active-color: #000000;
-  --bs-btn-active-bg: transparent;
-  --bs-btn-active-border-color: transparent;
+  --bs-btn-active-color: ${props => props.theme.color};
+  --bs-btn-active-bg: ${props => props.theme.backgroundColor};
+  --bs-btn-active-border-color: ${props => props.theme.backgroundColor};
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: #000000;
-  --bs-btn-disabled-bg: transparent;
-  --bs-btn-disabled-border-color: transparent;
-  color: #000000;
-  background-color: transparent;
+  --bs-btn-disabled-color: ${props => props.theme.color};
+  --bs-btn-disabled-bg: ${props => props.theme.backgroundColor};
+  --bs-btn-disabled-border-color: ${props => props.theme.backgroundColor};
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      color: #ffffff;
-      background-color: #000000;
+      color: ${props => props.theme.backgroundColor === "transparent" ? "#ffffff" : props.theme.backgroundColor};
+      background-color: ${props => props.theme.color};
     }
   }
 `;
@@ -33,15 +32,24 @@ type CustomButtonProps = {
   backgroundColor?: string;
 } & ButtonProps;
 
-export const CustomButton = forwardRef((props: CustomButtonProps, ref) => {
-  const {children, align = "right", color = "ffffff", backgroundColor = "transparent", ...otherProps} = props;
-  const alignStyle = align !== "center" ? {float: align} : {};
-  const colorStyle = { color: color, backgroundColor: backgroundColor };
-  const customStyle = {...alignStyle, ...colorStyle};
+export const CustomButton = forwardRef(({
+  align = "right",
+  color = "#000000",
+  backgroundColor = "transparent",
+  ...props
+}: CustomButtonProps, ref) => {
+  const {children, ...otherProps} = props;
+  const theme = {
+    color: color,
+    backgroundColor: backgroundColor,
+    align: align
+  };
   return (
-    <StyledButton {...otherProps} ref={ref} style={customStyle}>
-      {children}
-    </StyledButton>
+    <ThemeProvider theme={theme}>
+      <StyledButton {...otherProps} ref={ref}>
+        {children}
+      </StyledButton>
+    </ThemeProvider>
   );
 });
 CustomButton.displayName = "CustomButton";

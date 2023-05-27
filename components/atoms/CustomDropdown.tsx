@@ -97,6 +97,11 @@ const StyledDropdownToggle = styled(Dropdown.Toggle)`
 `;
 
 const StyledDropdownMenu = styled(Dropdown.Menu)`
+  --bs-dropdown-link-active-color: #fff;
+  --bs-dropdown-link-active-bg: #6e6e6e;
+`;
+
+const StyledDropdownItem = styled(Dropdown.Item)`
 `;
 
 /**
@@ -128,7 +133,7 @@ export const CustomDropdown = ({
 
       <StyledDropdownMenu>
         {items && items.map(item =>
-          <Dropdown.Item
+          <StyledDropdownItem
             href={item["href"]}
             key={item["key"]}
             eventKey={item["key"]}
@@ -138,7 +143,7 @@ export const CustomDropdown = ({
             }}
           >
             {item["label"]}
-          </Dropdown.Item>
+          </StyledDropdownItem>
         )}
       </StyledDropdownMenu>
     </StyledDropdown>

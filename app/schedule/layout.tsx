@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'SCHEDULE - SSR',
+  title: 'SCHEDULE',
   description: 'Manage your schedule',
 }
 
