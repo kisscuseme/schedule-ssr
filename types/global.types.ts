@@ -1,3 +1,5 @@
+import { DocumentData, DocumentSnapshot, QueryDocumentSnapshot } from "firebase/firestore";
+
 export interface AlertType {
   title?: string;
   content?: React.ReactNode;
@@ -12,3 +14,5 @@ export interface ScheduleInputType {
   schedule: string,
   id?: string
 }
+
+export type LastVisibleType = QueryDocumentSnapshot<DocumentData> | DocumentSnapshot<DocumentData> | string | null;

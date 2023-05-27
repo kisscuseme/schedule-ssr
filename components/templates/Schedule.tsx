@@ -3,7 +3,6 @@
 import { LoginStateType, ScheduleType } from "@/services/firebase/firebase.type";
 import { DefaultButton, DefaultCol, DefaultContainer, DefaultRow } from "../atoms/DefaultAtoms";
 import { checkLogin, logOut } from "@/services/firebase/auth";
-import { DocumentData, DocumentSnapshot, QueryDocumentSnapshot } from "firebase/firestore";
 import { getLastVisible, queryScheduleData } from "@/services/firebase/db";
 import { getDay, getReformDate, getToday, getYearList, getYearRange, l, sortSchedulList } from "@/services/util/util";
 import { ReactNode, useEffect, useRef, useState } from "react";
@@ -18,6 +17,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { deleteUser } from "firebase/auth";
 import { CustomDropdown, DropdownDataProps } from "../atoms/CustomDropdown";
 import TranslationFromClient from "../organisms/TranslationFromClient";
+import { LastVisibleType } from "@/types/global.types";
 
 interface ScheduleProps {
   scheduleDataFromServer: ScheduleType[];
@@ -33,8 +33,8 @@ export default function Schedule({
   lastVisibleFromServer
 }: ScheduleProps) {
   const [scheduleList, setScheduleList] = useState<ScheduleType[]>([]);
-  const [lastVisible,  setLastVisible] = useState<QueryDocumentSnapshot<DocumentData> | DocumentSnapshot<DocumentData> | string | null>(null);
-  const [nextLastVisible,  setNextLastVisible] = useState<QueryDocumentSnapshot<DocumentData> | DocumentSnapshot<DocumentData> | string | null>(null);
+  const [lastVisible,  setLastVisible] = useState<LastVisibleType>(null);
+  const [nextLastVisible,  setNextLastVisible] = useState<LastVisibleType>(null);
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
   const setIsLogedIn = useSetRecoilState<LoginStateType>(isLogedInState);
   const [selectedYear, setSelectedYear] = useRecoilState<string | null>(selectedYearState);
@@ -55,6 +55,7 @@ export default function Schedule({
   useEffect(() => {
     setScheduleList(scheduleDataFromServer);
     setYearList(getYearList());
+    setYearRange(getYearRange(getToday().substring(0,4)));
     checkLogin().then(async (data) => {
       try{
         if(data) {
@@ -98,7 +99,7 @@ export default function Schedule({
 
   useEffect(() => {
     const selectYear = (year: string) => {
-      setYearRange(getYearRange(year||getToday().substring(0,4)));
+      setYearRange(getYearRange(year));
       setSelectedYear(year);
     }
 
@@ -258,7 +259,6 @@ export default function Schedule({
       setScheduleList([]);
     }
     if(reloadData || lastVisible) {
-      console.log("refetch");
       refetch();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
