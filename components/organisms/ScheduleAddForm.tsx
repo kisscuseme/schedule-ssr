@@ -37,6 +37,7 @@ export const ScheduleAddForm = ({
     toDate: "",
     schedule: ""
   });
+  const [fold, setFold] = useState(false);
 
   useEffect(() => {
     setScheduleInput({
@@ -91,13 +92,18 @@ export const ScheduleAddForm = ({
 
   return (
     <InputFormWrapper>
-      <style>
-        {accordionCustomStyle}
-      </style>
-      <Accordion defaultActiveKey="ScheduleAddForm">
+      <style>{accordionCustomStyle}</style>
+      <Accordion
+        defaultActiveKey="ScheduleAddForm"
+        onSelect={() => {
+          setFold(!fold);
+        }}
+      >
         <Accordion.Item eventKey="ScheduleAddForm">
           <Accordion.Header>
-            <div color="#5f5f5f">{`[${l("Enter schedule")}]`}</div>
+            <div color="#5f5f5f">{`${l("Enter schedule")} ${
+              fold ? "▲" : "▼"
+            }`}</div>
           </Accordion.Header>
           <AccordionBody>
             <ScheduleInputForm
@@ -105,18 +111,20 @@ export const ScheduleAddForm = ({
               setScheduleInput={setScheduleInput}
               scheduleInputPlaceholder={l("Enter your schedule.")}
             />
-          <Row>
-            <Col>
-              <CustomButton
-                onClick={changeSchedule}
-              >
-                {l("Add")}
-              </CustomButton>
-            </Col>
-          </Row>
+            <Row>
+              <Col>
+                <CustomButton
+                  onClick={changeSchedule}
+                  backgroundColor="#3e3e3e"
+                  color="#fefefe"
+                >
+                  {l("Add")}
+                </CustomButton>
+              </Col>
+            </Row>
           </AccordionBody>
         </Accordion.Item>
-      </Accordion>    
+      </Accordion>
     </InputFormWrapper>
-  )
+  );
 }

@@ -18,6 +18,7 @@ import { LastVisibleType } from "@/types/global.types";
 import ScheduleTopBar from "../organisms/ScheduleTopBar";
 import { useQuery } from "@tanstack/react-query";
 import { CustomButton } from "../atoms/CustomButton";
+import { DivisionLine } from "../molecules/DefaultMolecules";
 
 interface ScheduleProps {
   scheduleDataFromServer: ScheduleType[];
@@ -234,6 +235,7 @@ export default function Schedule({
       <TranslationFromClient />
       <ScheduleTopBar />
       <ScheduleAddForm scheduleList={scheduleList} />
+      <DivisionLine />
       <DefaultRow>
         <DefaultCol>
           <ListWrapper>
