@@ -11,7 +11,7 @@ export const metadata = {
   openGraph: {
     title: 'SCHEDULE',
     description: 'Manage your schedule',
-    image: './logo.png'
+    image: '/logo.png'
   }
 }
 

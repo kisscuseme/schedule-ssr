@@ -4,7 +4,7 @@ export const metadata = {
   openGraph: {
     title: 'SCHEDULE - Sign In',
     description: 'Please log in.',
-    image: './logo.png'
+    image: '/logo.png'
   }
 }
 

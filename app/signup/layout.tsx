@@ -4,7 +4,7 @@ export const metadata = {
   openGraph: {
     title: 'SCHEDULE - Create an account',
     description: 'Please create an account.',
-    image: './logo.png'
+    image: '/logo.png'
   }
 }
 
