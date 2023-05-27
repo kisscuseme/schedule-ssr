@@ -6,12 +6,13 @@ import { ScheduleInputForm } from "./ScheduleInputForm"
 import { getReformDate, getToday, l, sortSchedulList } from "@/services/util/util"
 import { useEffect, useState } from "react";
 import { ScheduleInputType } from "@/types/global.types";
-import { DefaultButton } from "../atoms/DefaultAtoms";
 import { styled } from "styled-components";
 import { useMutation } from "@tanstack/react-query";
 import { insertScheduleData } from "@/services/firebase/db";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { rerenderDataState, showModalState, userInfoState } from "@/states/states";
+import { CustomButton } from "../atoms/CustomButton";
+import { accordionCustomStyle } from "../molecules/CustomMolecules";
 
 interface ScheduleAddFromProps {
   scheduleList: ScheduleType[]
@@ -90,24 +91,27 @@ export const ScheduleAddForm = ({
 
   return (
     <InputFormWrapper>
+      <style>
+        {accordionCustomStyle}
+      </style>
       <Accordion defaultActiveKey="ScheduleAddForm">
         <Accordion.Item eventKey="ScheduleAddForm">
           <Accordion.Header>
             <div color="#5f5f5f">{`[${l("Enter schedule")}]`}</div>
           </Accordion.Header>
           <AccordionBody>
-          <ScheduleInputForm
-            scheduleInput={scheduleInput}
-            setScheduleInput={setScheduleInput}
-            scheduleInputPlaceholder={l("Enter your schedule.")}
-          />
+            <ScheduleInputForm
+              scheduleInput={scheduleInput}
+              setScheduleInput={setScheduleInput}
+              scheduleInputPlaceholder={l("Enter your schedule.")}
+            />
           <Row>
             <Col>
-              <DefaultButton
+              <CustomButton
                 onClick={changeSchedule}
               >
                 {l("Add")}
-              </DefaultButton>
+              </CustomButton>
             </Col>
           </Row>
           </AccordionBody>

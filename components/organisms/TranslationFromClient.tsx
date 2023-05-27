@@ -4,16 +4,15 @@ import i18next from "i18next";
 import translationKR from '@/locales/kr/translation.json';
 import translationEN from '@/locales/en/translation.json';
 import localesJSON from '@/locales/locales.json';
-import { useEffect } from "react";
-import { useRecoilState } from "recoil";
-import { rerenderDataState } from "@/states/states";
+import { useEffect, useState } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { rerenderDataState, selectedLanguageState } from "@/states/states";
 
-export default function TranslationFromClient({
-  locale
-}: {
-  locale: string;
-}) {
+export default function TranslationFromClient() {
   const [rerenderData, setRerenderData] = useRecoilState(rerenderDataState);
+  const selectedLanguage = useRecoilValue(selectedLanguageState);
+  const [isChanged, setIsChanged] = useState<boolean>(false);
+
   useEffect(() => {
     const getLocaleJSON = (locale: string) => {
       if(locale === "kr") return translationKR
@@ -31,7 +30,7 @@ export default function TranslationFromClient({
     i18next
     .init({
       resources,
-      lng: locale, //default language
+      lng: window.localStorage.getItem("lang")||"kr", //default language
       keySeparator: false,
       interpolation: {
         escapeValue: false,
@@ -40,6 +39,23 @@ export default function TranslationFromClient({
     setRerenderData(!rerenderData);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if(selectedLanguage !== null) {
+      i18next.changeLanguage(selectedLanguage).then((t) => {
+        setIsChanged(!isChanged);
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedLanguage]);
+
+  useEffect(() => {
+    if(selectedLanguage !== null) {
+      localStorage.setItem("lang", selectedLanguage);
+      setRerenderData(!rerenderData);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isChanged]);
 
   return <></>;
 }

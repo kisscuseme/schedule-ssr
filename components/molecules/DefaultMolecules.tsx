@@ -1,6 +1,6 @@
 import { styled } from "styled-components"
 
 export const DivisionLine = styled.div`
-  border-top: 1px #ffffff solid;
+  border-top: 1px #dfdfdf solid;
   margin: 10px;
 `;

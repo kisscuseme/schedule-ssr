@@ -1,7 +1,7 @@
 "use client";
 
 import { Form } from "react-bootstrap";
-import { ChangeEvent, KeyboardEvent, RefObject, useEffect, useRef, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { checkEmail, l } from "@/services/util/util";
 import { firebaseAuth } from "@/services/firebase/firebase";
 import { sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
@@ -11,11 +11,12 @@ import { showModalState, userInfoState } from "@/states/states";
 import { signIn } from "@/services/firebase/auth";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { DefaultButton, DefaultCol, DefaultRow, GroupButton } from "../atoms/DefaultAtoms";
+import { DefaultCol, DefaultRow, GroupButton } from "../atoms/DefaultAtoms";
 import { CenterCol, SignInGroupButtonRow } from "../atoms/CustomAtoms";
 import { GroupButtonWrapper } from "../molecules/CustomMolecules";
 import { CustomInput } from "../atoms/CustomInput";
 import TranslationFromClient from "./TranslationFromClient";
+import { CustomButton } from "../atoms/CustomButton";
 
 export const SignInForm = ({
   emailPlaceholder,
@@ -211,7 +212,7 @@ export const SignInForm = ({
         signInHandleSubmit(data.email, data.password);
       })}
     >
-      <TranslationFromClient locale="kr" />
+      <TranslationFromClient />
       <DefaultRow>
         <DefaultCol>
           <CustomInput
@@ -253,16 +254,24 @@ export const SignInForm = ({
       </DefaultRow>
       <DefaultRow>
         <DefaultCol>
-          <DefaultButton type="submit">{signInButtonText}</DefaultButton>
+          <CustomButton type="submit">{signInButtonText}</CustomButton>
         </DefaultCol>
       </DefaultRow>
       <SignInGroupButtonRow>
         <CenterCol>
           <GroupButtonWrapper>
-            <GroupButton type="button" onClick={resetPasswordClickHandler}>
+            <GroupButton
+              type="button"
+              onClick={resetPasswordClickHandler}
+              align="center"
+            >
               {resetPasswordButtonText}
             </GroupButton>
-            <GroupButton type="button" onClick={signUpClickHandler}>
+            <GroupButton
+              type="button"
+              onClick={signUpClickHandler}
+              align="center"
+            >
               {signUpButtonText}
             </GroupButton>
           </GroupButtonWrapper>

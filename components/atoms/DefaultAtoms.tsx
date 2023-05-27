@@ -3,6 +3,7 @@
 import { forwardRef } from "react";
 import { Button, ButtonProps, Col, Container, FormControl, Row } from "react-bootstrap";
 import { styled } from "styled-components";
+import { CustomButton } from "./CustomButton";
 
 const StyledButton = styled(Button)`
   float: right;
@@ -26,11 +27,11 @@ export const DefaultRow = styled(Row)`
   min-height: 70px;
 `;
 
-export const DefaultCol = styled(Col)`
+export const DefaultCol = styled(Col)`  
   margin: auto;
 `;
 
-export const GroupButton = styled(Button)`
+export const GroupButton = styled(CustomButton)`
   margin: 10px;
 `;
 

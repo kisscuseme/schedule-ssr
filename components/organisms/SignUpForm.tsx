@@ -9,10 +9,11 @@ import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { Form } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { useSetRecoilState } from "recoil";
-import { DefaultButton, DefaultCol, DefaultRow } from "../atoms/DefaultAtoms";
+import { DefaultCol, DefaultRow } from "../atoms/DefaultAtoms";
 import { CustomInput } from "../atoms/CustomInput";
 import { CenterCol } from "../atoms/CustomAtoms";
 import TranslationFromClient from "./TranslationFromClient";
+import { CustomButton } from "../atoms/CustomButton";
 
 interface SignUpFormProps {
   emailPlaceholder: string;
@@ -146,7 +147,7 @@ export default function SignUpForm({
         );
       })}
     >
-      <TranslationFromClient locale="kr" />
+      <TranslationFromClient />
       <DefaultRow>
         <DefaultCol>
           <CustomInput
@@ -225,7 +226,7 @@ export default function SignUpForm({
       </DefaultRow>
       <DefaultRow>
         <DefaultCol>
-          <DefaultButton type="submit">{signUpButtonText}</DefaultButton>
+          <CustomButton type="submit">{signUpButtonText}</CustomButton>
         </DefaultCol>
       </DefaultRow>
       <DefaultRow>

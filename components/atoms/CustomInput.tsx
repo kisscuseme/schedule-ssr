@@ -28,8 +28,6 @@ interface InputOwnProps {
 type InputProps = InputOwnProps & FormControlProps & HTMLProps<HTMLInputElement>;
 
 const ClearButton = styled.button`
-  padding-left: 10px;
-  padding-top: 6px;
   position: absolute;
   font-weight: 700;
   border: none;
@@ -44,6 +42,15 @@ const ClearButton = styled.button`
 
 const CustomFormControl = styled(FormControl)`
   display: inline-block;
+  border: 0;
+  outline-width: 0;
+  background-color: transparent;
+  width: 100%;
+  padding: 0;
+  border-radius: 0;
+  &:focus {
+    box-shadow: unset;
+  }
 `;
 
 /**
@@ -67,8 +74,13 @@ export const CustomInput = forwardRef(({
     }
   }, [initValue]);
 
+  const wrapperStyle = {
+    borderBottom: "1px solid #000000",
+    paddingRight: `${clearButton ? "25px" : "0"}`
+  }
+
   return (
-    <div style={clearButton ? {paddingRight:"25px"} : {}}>
+    <div style={wrapperStyle}>
       <CustomFormControl
         ref={ref}
         type={type}

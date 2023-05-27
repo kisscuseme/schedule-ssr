@@ -2,10 +2,11 @@
 
 import { l } from "@/services/util/util";
 import { showModalState } from "@/states/states";
-import { Button, Modal } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import { useSetRecoilState } from "recoil";
 import { ModalProps } from "react-bootstrap";
 import { styled } from "styled-components";
+import { CustomButton } from "../atoms/CustomButton";
 
 interface AlertOwnProps {
   /**
@@ -65,7 +66,7 @@ export const Alert = ({
         {content}
       </Modal.Body>
       <Modal.Footer>
-        {confirm && <Button
+        {confirm && <CustomButton
           onClick={() => {
             setShowModal({
               title: "",
@@ -78,8 +79,8 @@ export const Alert = ({
           }}
         >
           {l("Confirm")}
-        </Button>}
-        <Button
+        </CustomButton>}
+        <CustomButton
           onClick={() => {
             setShowModal({
               title: "",
@@ -92,7 +93,7 @@ export const Alert = ({
           }}
         >
           {l("Close")}
-        </Button>
+        </CustomButton>
       </Modal.Footer>
     </CustomModal>
   );

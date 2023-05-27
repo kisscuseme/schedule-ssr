@@ -57,7 +57,33 @@ export const defaultStyle = `
 `;
 
 const parentStyle = `
-float: right;
+  float: right;
+`;
+
+const customStyle = `
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: #ffffff;
+      background-color: #000000;
+    }
+  }
+`;
+
+const primaryStyle = `
+  --bs-btn-color: #000000;
+  --bs-btn-bg: transparent;
+  --bs-btn-border-color: transparent;
+  --bs-btn-hover-color: #000000;
+  --bs-btn-hover-bg: transparent;
+  --bs-btn-hover-border-color: transparent;
+  --bs-btn-focus-shadow-rgb: 49,132,253;
+  --bs-btn-active-color: #000000;
+  --bs-btn-active-bg: transparent;
+  --bs-btn-active-border-color: transparent;
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-color: #000000;
+  --bs-btn-disabled-bg: transparent;
+  --bs-btn-disabled-border-color: transparent;  
 `;
 
 const StyledDropdown = styled(Dropdown)`
@@ -66,6 +92,8 @@ const StyledDropdown = styled(Dropdown)`
 
 const StyledDropdownToggle = styled(Dropdown.Toggle)`
   ${defaultStyle}
+  ${primaryStyle}
+  ${customStyle}
 `;
 
 const StyledDropdownMenu = styled(Dropdown.Menu)`

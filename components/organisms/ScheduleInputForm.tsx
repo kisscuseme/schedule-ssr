@@ -21,7 +21,6 @@ const InputRow = styled(Row)`
 
 const InputCol = styled(Col)`
   margin: auto;
-  padding: 0;
 `;
 
 const MiddleCol = styled(InputCol)`

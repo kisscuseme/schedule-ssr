@@ -43,9 +43,17 @@ export default function RootLayout({
           integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
           crossOrigin="anonymous"
         />
+
+        <link
+          rel="preload"
+          as="font"
+          type="font/woff"
+          href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEdu_OTFBoldA.woff"
+          crossOrigin="anonymous"
+        />
       </head>
       <body>
-        <TranslationFromServer locale="kr" />
+        <TranslationFromServer />
         <ReactQueryWrapper>
           <RecoilRootWrapper>
             <StyledComponentsRegistry>

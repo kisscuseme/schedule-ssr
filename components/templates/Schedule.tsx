@@ -1,23 +1,23 @@
 "use client";
 
-import { LoginStateType, ScheduleType } from "@/services/firebase/firebase.type";
-import { DefaultButton, DefaultCol, DefaultContainer, DefaultRow } from "../atoms/DefaultAtoms";
-import { checkLogin, logOut } from "@/services/firebase/auth";
+import { ScheduleType } from "@/services/firebase/firebase.type";
+import { DefaultCol, DefaultContainer, DefaultRow } from "../atoms/DefaultAtoms";
+import { checkLogin } from "@/services/firebase/auth";
 import { getLastVisible, queryScheduleData } from "@/services/firebase/db";
-import { getDay, getReformDate, getToday, getYearList, getYearRange, l, sortSchedulList } from "@/services/util/util";
+import { getDay, getReformDate, getToday, getYearRange, l, sortSchedulList } from "@/services/util/util";
 import { ReactNode, useEffect, useRef, useState } from "react";
-import { Accordion, Button, Col, Row, Spinner } from "react-bootstrap";
-import { useRecoilState, useSetRecoilState } from "recoil";
-import { isLogedInState, reloadDataState, rerenderDataState, scheduleAccordionActiveState, selectedYearState, showModalState, userInfoState } from "@/states/states";
+import { Accordion, Col, Row, Spinner } from "react-bootstrap";
+import { useRecoilState } from "recoil";
+import { reloadDataState, rerenderDataState, scheduleAccordionActiveState, selectedYearState, showModalState, userInfoState } from "@/states/states";
 import { CenterCol } from "../atoms/CustomAtoms";
 import { ScheduleAddForm } from "../organisms/ScheduleAddForm";
 import { styled } from "styled-components";
 import { ScheduleEditForm } from "../organisms/ScheduleEditForm";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { deleteUser } from "firebase/auth";
-import { CustomDropdown, DropdownDataProps } from "../atoms/CustomDropdown";
 import TranslationFromClient from "../organisms/TranslationFromClient";
 import { LastVisibleType } from "@/types/global.types";
+import ScheduleTopBar from "../organisms/ScheduleTopBar";
+import { useQuery } from "@tanstack/react-query";
+import { CustomButton } from "../atoms/CustomButton";
 
 interface ScheduleProps {
   scheduleDataFromServer: ScheduleType[];
@@ -28,6 +28,12 @@ const ListWrapper = styled.div`
   margin-bottom: 10px;
 `;
 
+const CustomSpinner = styled(Spinner)`
+  margin: auto;
+  display: flex;
+  color: #bfbfbf;
+`;
+
 export default function Schedule({
   scheduleDataFromServer,
   lastVisibleFromServer
@@ -36,9 +42,7 @@ export default function Schedule({
   const [lastVisible,  setLastVisible] = useState<LastVisibleType>(null);
   const [nextLastVisible,  setNextLastVisible] = useState<LastVisibleType>(null);
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
-  const setIsLogedIn = useSetRecoilState<LoginStateType>(isLogedInState);
   const [selectedYear, setSelectedYear] = useRecoilState<string | null>(selectedYearState);
-  const setShowModal = useSetRecoilState(showModalState);
   const [noMoreData, setNoMoreData] = useState<boolean>(false);
   const [reloadData, setReloadData] = useRecoilState(reloadDataState);
   const [allowLoading, setAllowLoading] = useState<boolean>(true);
@@ -48,14 +52,12 @@ export default function Schedule({
     fromYear: "",
     toYear: "",
   });
-  const [yearList, setYearList] = useState<DropdownDataProps[]>([]);
-  const [accordionChildren, setAccordionChildren] = useState<ReactNode>(<></>);
-  const [yearSelectDropdown, setYearSelectDropdown] = useState<ReactNode>(<></>);
+  const [accordionChildren, setAccordionChildren] = useState<ReactNode | null>(null);
   const [scheduleAccordionActive, setScheduleAccordionActive] = useRecoilState(scheduleAccordionActiveState);
+  const [firstLoading, setFirstLoading] = useState(true);
 
   useEffect(() => {
     setScheduleList(scheduleDataFromServer);
-    setYearList(getYearList());
     setYearRange(getYearRange(getToday().substring(0,4)));
     checkLogin().then(async (data) => {
       try{
@@ -98,41 +100,30 @@ export default function Schedule({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    const selectYear = (year: string) => {
-      setYearRange(getYearRange(year));
-      setSelectedYear(year);
-    }
-
-    setYearSelectDropdown(
-      <CustomDropdown
-        initText={getToday().substring(0,4)}
-        items={yearList}
-        onClickItemHandler={selectYear}
-        id="schedule-year-dropdown"
-      />
-    );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[yearList]);
-
   const makeAccordionChildren = (scheduleList: ScheduleType[]) => {
     return scheduleList.map((value) => (
       <Accordion.Item key={value?.id} eventKey={value?.id || ""}>
         <Accordion.Header>
           <Col xs={5}>
             <Row>
-              <div>{getReformDate(value?.date || "", ".")}({l(getDay(value?.date || ""))})</div>
+              <div>
+                {getReformDate(value?.date || "", ".")}(
+                {l(getDay(value?.date || ""))})
+              </div>
             </Row>
-            {
-              value?.toDate && value?.date !== value?.toDate && <>
+            {value?.toDate && value?.date !== value?.toDate && (
+              <>
                 <Row>
-                  <div>{"~ " + value?.toDate} {`(${l(getDay(value?.toDate||""))})`}</div>
+                  <div style={{ fontSize: "14px", color: "#6e6e6e" }}>
+                    {"~ " + value?.toDate}{" "}
+                    {`(${l(getDay(value?.toDate || ""))})`}
+                  </div>
                 </Row>
               </>
-            }
+            )}
           </Col>
           <Col>
-            <div style={{wordBreak: "break-all"}}>{value?.content}</div>
+            <div style={{ wordBreak: "break-all" }}>{value?.content}</div>
           </Col>
         </Accordion.Header>
         <Accordion.Body>
@@ -148,7 +139,7 @@ export default function Schedule({
   const getScheduleData = async () => {
     try {
       if(userInfo?.uid) {
-        setAllowLoading(false);  
+        setAllowLoading(false);
         return queryScheduleData([
           {
             field: "date",
@@ -195,66 +186,39 @@ export default function Schedule({
   });
 
   useEffect(() => {
-    setRerenderData(!rerenderData);
+    if(firstLoading) {
+      setFirstLoading(false);
+    } else {
+      setRerenderData(!rerenderData);
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scheduleList]);
 
   useEffect(() => {
-    scheduleList.sort(sortSchedulList);
-    setAccordionChildren(makeAccordionChildren(scheduleList));
+    if(scheduleList.length > 0) {
+      scheduleList.sort(sortSchedulList);
+      setAccordionChildren(makeAccordionChildren(scheduleList));
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[rerenderData]);
 
-  const signOutMutation = useMutation(logOut, {
-    onSuccess(data) {
-      if(data) {
-        window.localStorage.setItem("email", userInfo?.email||"");
-        setUserInfo(null);
-        setIsLogedIn(null);
-        window.location.href = "/";
-      }
-    },
-  });
-
-  const signOutHandler = () => {
-    setShowModal({
-      title: l("Check"),
-      content: l("Are you sure you want to log out?"),
-      show: true,
-      confirm: () => {
-        signOutMutation.mutate();
-      }
-    });
-  }
-
-  const deleteUserMutation = useMutation(deleteUser, {
-    onSuccess() {
-      window.location.href = "/";
+  useEffect(() => {
+    if(selectedYear) {
+      setYearRange(getYearRange(selectedYear));
     }
-  });
-
-  const deleteUserHandler = () => {
-    setShowModal({
-      title: l("Check"),
-      content: l("Are you sure you want to delete your account?"),
-      show: true,
-      confirm: () => {
-        checkLogin().then((user) => {
-          if(user) deleteUserMutation.mutate(user);
-        });
-      }
-    });
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedYear]);
 
   useEffect(() => {
     if(selectedYear) {
       setReloadData(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedYear]);
+  }, [yearRange]);
 
   useEffect(() => {
     if(reloadData) {
+      setAccordionChildren(<></>);
       setNoMoreData(false);
       setLastVisible(null);
       setScheduleList([]);
@@ -267,36 +231,33 @@ export default function Schedule({
 
   return (
     <DefaultContainer>
-      <TranslationFromClient locale="kr" />
-      <DefaultRow>
-        <DefaultCol>
-          <DefaultButton onClick={deleteUserHandler}>
-            {l("Delete User")}
-          </DefaultButton>
-        </DefaultCol>
-        <DefaultCol>
-          <DefaultButton onClick={signOutHandler}>
-            {l("Sign Out")}
-          </DefaultButton>
-        </DefaultCol>
-        <DefaultCol>{yearSelectDropdown}</DefaultCol>
-      </DefaultRow>
-      <DefaultRow>
-        <DefaultCol>
-          <ScheduleAddForm scheduleList={scheduleList} />
-        </DefaultCol>
-      </DefaultRow>
+      <TranslationFromClient />
+      <ScheduleTopBar />
+      <ScheduleAddForm scheduleList={scheduleList} />
       <DefaultRow>
         <DefaultCol>
           <ListWrapper>
-            <Accordion
-              defaultActiveKey={scheduleAccordionActive}
-              onSelect={(e) => {
-                setScheduleAccordionActive(e);
-              }}
-            >
-              {accordionChildren}
-            </Accordion>
+            {scheduleList.length > 0 ? (
+              <Accordion
+                defaultActiveKey={scheduleAccordionActive}
+                onSelect={(e) => {
+                  setScheduleAccordionActive(e);
+                }}
+              >
+                {accordionChildren ||
+                  makeAccordionChildren(scheduleDataFromServer)}
+              </Accordion>
+            ) : reloadData ? (
+              <DefaultRow>
+                <CenterCol>
+                  <CustomSpinner animation="border" />
+                </CenterCol>
+              </DefaultRow>
+            ) : (
+              <DefaultRow>
+                <CenterCol>{l("No content viewed.")}</CenterCol>
+              </DefaultRow>
+            )}
           </ListWrapper>
         </DefaultCol>
       </DefaultRow>
@@ -306,18 +267,19 @@ export default function Schedule({
             {scheduleList.length > 0 &&
               !noMoreData &&
               (allowLoading && !isLoading ? (
-                <Button
+                <CustomButton
+                  align="center"
                   ref={buttonRef}
                   onClick={() => {
                     setLastVisible(nextLastVisible);
                   }}
                 >
                   {l("Load More")}
-                </Button>
+                </CustomButton>
               ) : (
-                <Button>
-                  <Spinner animation="border" />
-                </Button>
+                <CustomButton align="center">
+                  <CustomSpinner animation="border" />
+                </CustomButton>
               ))}
           </CenterCol>
         </DefaultRow>

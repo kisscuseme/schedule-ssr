@@ -1,6 +1,6 @@
 "use client";
 
-import { Col, Row, useAccordionButton } from "react-bootstrap";
+import { Button, Col, Row, useAccordionButton } from "react-bootstrap";
 import { EventHandler, SyntheticEvent, useEffect, useRef, useState } from "react";
 import { ScheduleType } from "@/services/firebase/firebase.type";
 import { deleteScheduleData, updateScheduleData } from "@/services/firebase/db";
@@ -10,7 +10,7 @@ import { getReformDate, l, sortSchedulList } from "@/services/util/util";
 import { ScheduleInputForm } from "./ScheduleInputForm";
 import { ScheduleInputType } from "@/types/global.types";
 import { useMutation } from "@tanstack/react-query";
-import { DefaultButton } from "../atoms/DefaultAtoms";
+import { CustomButton } from "../atoms/CustomButton";
 
 interface ScheduleEditFromProps {
   beforeSchedule: ScheduleType
@@ -60,7 +60,6 @@ export const ScheduleEditForm = ({
       schedule: beforeSchedule?.content||"",
       id: beforeSchedule?.id||""
     });
-    console.log("reset button 1");
     setResetClearButton(!resetClearButton);
   }
 
@@ -161,40 +160,46 @@ export const ScheduleEditForm = ({
       />
       <Row>
         <Col>
-          <DefaultButton
+          <CustomButton
             onClick={resetChange}
+            color="#8e8e8e"
+            backgroundColor="#efefef"
           >
             {l("Reset")}
-          </DefaultButton>
+          </CustomButton>
         </Col>
         <Col>
-          <DefaultButton
+          <CustomButton
             onClick={(e: SyntheticEvent<HTMLButtonElement, Event>) => {
               changeSchedule(e, closeAccordion);
             }}
+            color="#ffffff"
+            backgroundColor="#8e8e8e"
           >
             {l("Edit")}
-          </DefaultButton>
+          </CustomButton>
         </Col>
         <Col>
-          <DefaultButton
+          <CustomButton
             onClick={(e: SyntheticEvent<HTMLButtonElement, Event>) => {
               deleteSchedule(e, closeAccordion);
             }}
+            color="#ffffff"
+            backgroundColor="#ff7171"
           >
             {l("Delete")}
-          </DefaultButton>
+          </CustomButton>
         </Col>
       </Row>
       <div className="hidden-button">
-        <DefaultButton
+        <Button
           ref={closeAccordionButtonRef}
           onClick={(e: SyntheticEvent<HTMLButtonElement, Event>) => {
             closeAccordion(e);
           }}
         >
           close accordion
-        </DefaultButton>
+        </Button>
       </div>
     </>
   );

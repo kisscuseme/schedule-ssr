@@ -1,23 +1,20 @@
 import { ReactNode } from "react";
-import { Col, Row } from "react-bootstrap";
 import { styled } from "styled-components";
+import { DefaultCol, DefaultRow } from "../atoms/DefaultAtoms";
 
-const TopBarRow = styled(Row)`
-  height: 50px;
+const TopBarRow = styled(DefaultRow)`
+  height: 70px;
 `;
 
-const TopBarCol = styled(Col)`
-  margin: auto;
-`;
 
 export const TopBar = ({
   children
 }: { children: ReactNode }) => {
   return (
     <TopBarRow>
-      <TopBarCol>
+      <DefaultCol>
         {children}
-      </TopBarCol>
+      </DefaultCol>
     </TopBarRow>
   );
 }
