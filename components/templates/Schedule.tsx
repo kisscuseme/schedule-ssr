@@ -55,7 +55,6 @@ export default function Schedule({
   useEffect(() => {
     setScheduleList(scheduleDataFromServer);
     setYearList(getYearList());
-    setYearRange(getYearRange(selectedYear||getToday().substring(0,4)));
     checkLogin().then(async (data) => {
       try{
         if(data) {
@@ -98,6 +97,11 @@ export default function Schedule({
   }, []);
 
   useEffect(() => {
+    const selectYear = (year: string) => {
+      setYearRange(getYearRange(year||getToday().substring(0,4)));
+      setSelectedYear(year);
+    }
+
     setYearSelectDropdown(
       <CustomDropdown
         initText={getToday().substring(0,4)}
@@ -154,7 +158,7 @@ export default function Schedule({
             operator: "<=",
             value: yearRange.toYear
           }
-        ], userInfo?.uid||"", nextLastVisible);
+        ], userInfo?.uid||"", lastVisible);
       } else {
         return false;
       }
@@ -240,10 +244,6 @@ export default function Schedule({
     });
   }
 
-  const selectYear = (year: string) => {
-    setSelectedYear(year);
-  }
-
   useEffect(() => {
     if(selectedYear) {
       setReloadData(true);
@@ -258,6 +258,7 @@ export default function Schedule({
       setScheduleList([]);
     }
     if(reloadData || lastVisible) {
+      console.log("refetch");
       refetch();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
