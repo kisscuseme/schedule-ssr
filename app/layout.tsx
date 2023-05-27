@@ -6,8 +6,13 @@ import TranslationFromServer from "@/components/organisms/TranslationFromServer"
 import ShowAlert from "@/components/organisms/ShowAlert";
 
 export const metadata = {
-  title: 'SCHEDULE - SSR',
+  title: 'SCHEDULE',
   description: 'Manage your schedule',
+  openGraph: {
+    title: 'SCHEDULE',
+    description: 'Manage your schedule',
+    image: './logo.png'
+  }
 }
 
 export default function RootLayout({

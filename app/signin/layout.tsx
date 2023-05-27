@@ -1,6 +1,11 @@
 export const metadata = {
   title: 'SCHEDULE - Sign In',
-  description: 'Manage your schedule',
+  description: 'Please log in.',
+  openGraph: {
+    title: 'SCHEDULE - Sign In',
+    description: 'Please log in.',
+    image: './logo.png'
+  }
 }
 
 export default function RootLayout({
