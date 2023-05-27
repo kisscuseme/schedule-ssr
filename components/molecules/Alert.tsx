@@ -77,6 +77,8 @@ export const Alert = ({
             });
             if(confirm) confirm();            
           }}
+          backgroundColor="#8e8e8e"
+          color="#ffffff"
         >
           {l("Confirm")}
         </CustomButton>}

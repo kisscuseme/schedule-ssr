@@ -262,7 +262,7 @@ export default function Schedule({
         </DefaultCol>
       </DefaultRow>
       {nextLastVisible && (
-        <DefaultRow>
+        <Row>
           <CenterCol>
             {scheduleList.length > 0 &&
               !noMoreData &&
@@ -282,7 +282,7 @@ export default function Schedule({
                 </CustomButton>
               ))}
           </CenterCol>
-        </DefaultRow>
+        </Row>
       )}
     </DefaultContainer>
   );
