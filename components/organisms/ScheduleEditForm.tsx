@@ -39,7 +39,8 @@ export const ScheduleEditForm = ({
     setScheduleInput({
       fromDate: (beforeSchedule?.date||"").substring(0,10).replaceAll(".","-"),
       toDate: (beforeSchedule?.toDate||"").substring(0,10).replaceAll(".","-"),
-      schedule: beforeSchedule?.content||""
+      schedule: beforeSchedule?.content||"",
+      id: beforeSchedule?.id
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -59,6 +60,7 @@ export const ScheduleEditForm = ({
       schedule: beforeSchedule?.content||"",
       id: beforeSchedule?.id||""
     });
+    console.log("reset button 1");
     setResetClearButton(!resetClearButton);
   }
 

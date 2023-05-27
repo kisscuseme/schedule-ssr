@@ -8,7 +8,7 @@ import { getDay, getReformDate, getToday, getYearList, getYearRange, l, sortSche
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { Accordion, Button, Col, Row, Spinner } from "react-bootstrap";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { isLogedInState, reloadDataState, rerenderDataState, selectedYearState, showModalState, userInfoState } from "@/states/states";
+import { isLogedInState, reloadDataState, rerenderDataState, scheduleAccordionActiveState, selectedYearState, showModalState, userInfoState } from "@/states/states";
 import { CenterCol } from "../atoms/CustomAtoms";
 import { ScheduleAddForm } from "../organisms/ScheduleAddForm";
 import { styled } from "styled-components";
@@ -51,6 +51,7 @@ export default function Schedule({
   const [yearList, setYearList] = useState<DropdownDataProps[]>([]);
   const [accordionChildren, setAccordionChildren] = useState<ReactNode>(<></>);
   const [yearSelectDropdown, setYearSelectDropdown] = useState<ReactNode>(<></>);
+  const [scheduleAccordionActive, setScheduleAccordionActive] = useRecoilState(scheduleAccordionActiveState);
 
   useEffect(() => {
     setScheduleList(scheduleDataFromServer);
@@ -278,9 +279,7 @@ export default function Schedule({
             {l("Sign Out")}
           </DefaultButton>
         </DefaultCol>
-        <DefaultCol>
-          {yearSelectDropdown}
-        </DefaultCol>
+        <DefaultCol>{yearSelectDropdown}</DefaultCol>
       </DefaultRow>
       <DefaultRow>
         <DefaultCol>
@@ -290,7 +289,12 @@ export default function Schedule({
       <DefaultRow>
         <DefaultCol>
           <ListWrapper>
-            <Accordion defaultActiveKey="">
+            <Accordion
+              defaultActiveKey={scheduleAccordionActive}
+              onSelect={(e) => {
+                setScheduleAccordionActive(e);
+              }}
+            >
               {accordionChildren}
             </Accordion>
           </ListWrapper>
