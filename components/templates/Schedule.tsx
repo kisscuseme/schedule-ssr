@@ -239,7 +239,8 @@ export default function Schedule({
       <DefaultRow>
         <DefaultCol>
           <ListWrapper>
-            {scheduleList.length > 0 ? (
+            {(!firstLoading && scheduleList.length > 0) ||
+            (firstLoading && scheduleDataFromServer.length > 0) ? (
               <Accordion
                 defaultActiveKey={scheduleAccordionActive}
                 onSelect={(e) => {
