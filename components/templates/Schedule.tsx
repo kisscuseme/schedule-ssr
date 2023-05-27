@@ -108,7 +108,7 @@ export default function Schedule({
           <Col xs={5}>
             <Row>
               <div>
-                {getReformDate(value?.date || "", ".")}(
+                {getReformDate(value?.date || "", ".")} (
                 {l(getDay(value?.date || ""))})
               </div>
             </Row>
