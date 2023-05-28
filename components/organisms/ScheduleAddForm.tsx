@@ -22,10 +22,6 @@ const InputFormWrapper = styled.div`
   margin-bottom: 10px;
 `;
 
-const AccordionBody = styled(Accordion.Body)`
-  padding: 10px 20px;
-`;
-
 export const ScheduleAddForm = ({
   scheduleList
 }: ScheduleAddFromProps) => {
@@ -105,7 +101,7 @@ export const ScheduleAddForm = ({
               fold ? "▲" : "▼"
             }`}</div>
           </Accordion.Header>
-          <AccordionBody>
+          <Accordion.Body>
             <ScheduleInputForm
               scheduleInput={scheduleInput}
               setScheduleInput={setScheduleInput}
@@ -122,7 +118,7 @@ export const ScheduleAddForm = ({
                 </CustomButton>
               </Col>
             </Row>
-          </AccordionBody>
+          </Accordion.Body>
         </Accordion.Item>
       </Accordion>
     </InputFormWrapper>
