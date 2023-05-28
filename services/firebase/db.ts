@@ -17,7 +17,7 @@ import {
 } from "firebase/firestore";
 import { getReformDate } from "../util/util";
 import { firebaseDb } from "./firebase";
-import { ScheduleType, WhereConfigType } from "./firebase.type";
+import { ScheduleType, WhereConfigType } from "@/types/global.types";
 
 const limitNumber = 15;
 
