@@ -94,6 +94,24 @@ const getYearRange = (selectedYear: string) => {
   };
 }
 
+//쿠키 저장하는 함수
+const setCookie = (name: string, value: string, unixTime: number = (new Date(9999, 12, 31).getTime())) => {
+  var date = new Date();
+  date.setTime(date.getTime() + unixTime);
+  document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value) + ';expires=' + date.toUTCString() + ';path=/';
+}
+
+//쿠키 값 가져오는 함수
+const getCookie = (name: string) => {
+  var value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+  return value? value[2] : null;
+}
+
+//쿠키 삭제하는 함수
+const deleteCookie = (name: string) => {
+  document.cookie = encodeURIComponent(name) + '=; expires=Thu, 01 JAN 1999 00:00:10 GMT';
+}
+
 export {
   checkEmail,
   checkPassword,
@@ -103,5 +121,8 @@ export {
   getYearList,
   l,
   sortSchedulList,
-  getYearRange
+  getYearRange,
+  getCookie,
+  setCookie,
+  deleteCookie,
 };

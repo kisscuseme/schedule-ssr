@@ -1,3 +1,5 @@
+"use client";
+
 import { l } from "@/services/util/util";
 import { selectedLanguageState, showModalState } from "@/states/states";
 import i18next from "i18next";
@@ -5,7 +7,7 @@ import { useSetRecoilState } from "recoil";
 import localesJSON from "../../locales/locales.json";
 import { CustomDropdown, DropdownDataProps } from "../atoms/CustomDropdown";
 
-export const LanguageSelector = () => {
+export const LanguageSelectorForClient = () => {
   const setSelectedLanguage = useSetRecoilState(selectedLanguageState);
   const setShowModal = useSetRecoilState(showModalState);
   const data: DropdownDataProps[] = [];
@@ -46,5 +48,5 @@ export const LanguageSelector = () => {
       items={data}
       onClickItemHandler={selectLanguage}
     /> : <></>
-  )
+  );
 }

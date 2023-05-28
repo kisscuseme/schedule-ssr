@@ -13,7 +13,7 @@ import { deleteUser } from "firebase/auth";
 import { CustomDropdown, DropdownDataProps } from "../atoms/CustomDropdown";
 import { TopBar } from "../molecules/TopBar";
 import { DivisionLine } from "../molecules/DefaultMolecules";
-import { LanguageSelector } from "./LanguageSelector";
+import { LanguageSelectorForClient } from "./LanguageSelectorForClient";
 import { styled } from "styled-components";
 
 const NavbarOffcanvas = styled(Navbar.Offcanvas)`
@@ -117,44 +117,42 @@ export default function ScheduleTopBar() {
       <DefaultRow>
         <DefaultCol>
           <Navbar expand={false}>
-            <NavbarToggle
-              aria-controls={`nav-1`}
-            />
+            <NavbarToggle aria-controls={`nav-1`} />
             <NavbarOffcanvas
               id={`nav-1`}
               aria-labelledby={`nav-2`}
               placement="end"
             >
               <Offcanvas.Header closeButton>
-                <Offcanvas.Title id={`nav-2`}>
-                  {l('SCHEDULE')}
-                </Offcanvas.Title>
+                <Offcanvas.Title id={`nav-2`}>{l("SCHEDULE")}</Offcanvas.Title>
               </Offcanvas.Header>
               <Offcanvas.Body>
                 <Row>
-                  <Col><LanguageSelector/></Col>
+                  <Col>
+                    <LanguageSelectorForClient />
+                  </Col>
                 </Row>
-                <DivisionLine/>
+                <DivisionLine />
                 <Row>
-                  <Col>{l("E-mail")}: {userInfo?.email}</Col>
+                  <Col>
+                    {l("E-mail")}: {userInfo?.email}
+                  </Col>
                 </Row>
                 <Row>
-                  <Col>{l("Name")}: {userInfo?.name}</Col>
+                  <Col>
+                    {l("Name")}: {userInfo?.name}
+                  </Col>
                 </Row>
-                <DivisionLine/>
+                <DivisionLine />
                 <Row>
                   <Col></Col>
                   <Col>
-                    <NavLink
-                      onClick={() => signOutHandler()}
-                    >
+                    <NavLink onClick={() => signOutHandler()}>
                       {l("Sign Out")}
                     </NavLink>
                   </Col>
                   <Col>
-                    <NavLinkPink
-                      onClick={() => deleteUserHandler()}
-                    >
+                    <NavLinkPink onClick={() => deleteUserHandler()}>
                       {l("Delete User")}
                     </NavLinkPink>
                   </Col>
@@ -164,7 +162,7 @@ export default function ScheduleTopBar() {
           </Navbar>
         </DefaultCol>
         <DefaultCol>
-          <div style={{float:"right"}}>{yearSelectDropdown}</div>
+          <div style={{ float: "right" }}>{yearSelectDropdown}</div>
         </DefaultCol>
       </DefaultRow>
     </TopBar>

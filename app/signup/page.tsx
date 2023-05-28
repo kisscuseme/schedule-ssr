@@ -1,13 +1,6 @@
 import SignUp from "@/components/templates/SignUp";
 
-const SignUpPage = async () => {
-  await (async () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(true);
-      }, 2000);
-    })
-  })();
+const SignUpPage = () => {
   return <SignUp/>
 }
 

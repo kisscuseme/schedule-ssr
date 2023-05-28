@@ -1,6 +1,7 @@
 "use client";
 
 import { checkLogin } from "@/services/firebase/auth";
+import { setCookie } from "@/services/util/util";
 import { userInfoState } from "@/states/states";
 import { useEffect } from "react";
 import { useRecoilState } from "recoil";
@@ -9,8 +10,9 @@ const Home = () => {
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
 
   useEffect(() => {
-    const lang = window.localStorage.getItem("lang")||"kr";
-    document.cookie = `lang=${lang}`;
+    const langCode = window.localStorage.getItem("lang")||"kr";
+    setCookie("lang", langCode);
+       
     checkLogin().then(async (data) => {
       if(data) {
         setUserInfo({
@@ -22,7 +24,7 @@ const Home = () => {
         window.location.replace("/schedule");
       } else {
         setUserInfo(null);
-        document.cookie = "token=; max-age=-1";
+        setCookie("token", "", -1);
         window.location.replace("/signin");
       }
     }).catch((error) => {
