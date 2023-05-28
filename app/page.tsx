@@ -11,7 +11,7 @@ const Home = () => {
       .then(async (data) => {
         if (data) {
           // 서버 인증에 필요한 토큰 값 저장
-          document.cookie = `token=${await data.getIdToken()}`;
+          setCookie("token", await data.getIdToken());
           // Schedule 페이지 이동
           window.location.replace("/schedule");
         } else {

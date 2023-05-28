@@ -13,6 +13,7 @@ import {
   getToday,
   getYearRange,
   l,
+  setCookie,
   sortSchedulList,
 } from "@/services/util/util";
 import { ReactNode, useEffect, useRef, useState } from "react";
@@ -107,7 +108,7 @@ export default function Schedule({ scheduleDataFromServer }: ScheduleProps) {
               );
             }
           } else {
-            document.cookie = "";
+            setCookie("token", "", -1);
             setUserInfo(null);
           }
         } catch (error: any) {
