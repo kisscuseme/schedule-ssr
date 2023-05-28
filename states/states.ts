@@ -1,6 +1,4 @@
-import { LoginStateType, UserType } from '@/services/firebase/firebase.type';
-import { getToday } from '@/services/util/util';
-import { AlertType } from '@/types/global.types';
+import { AlertType, LoginStateType, UserType } from '@/types/global.types';
 import { AccordionEventKey } from 'react-bootstrap/esm/AccordionContext';
 import { atom } from 'recoil';
 

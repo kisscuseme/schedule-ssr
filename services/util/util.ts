@@ -1,5 +1,5 @@
+import { ScheduleType } from "@/types/global.types";
 import { t } from "i18next";
-import { ScheduleType } from "../firebase/firebase.type";
 
 const getDay = (date: string) => {
   var yyyyMMdd = getReformDate(date, "").substring(0, 8);

@@ -1,6 +1,5 @@
 "use client";
 
-import { LoginStateType } from "@/services/firebase/firebase.type";
 import { DefaultCol, DefaultRow } from "../atoms/DefaultAtoms";
 import { checkLogin, logOut } from "@/services/firebase/auth";
 import { getToday, getYearList, l } from "@/services/util/util";
@@ -15,6 +14,7 @@ import { TopBar } from "../molecules/TopBar";
 import { DivisionLine } from "../molecules/DefaultMolecules";
 import { LanguageSelectorForClient } from "./LanguageSelectorForClient";
 import { styled } from "styled-components";
+import { LoginStateType } from "@/types/global.types";
 
 const NavbarOffcanvas = styled(Navbar.Offcanvas)`
   font-family: 'GangwonEdu_OTFBoldA';

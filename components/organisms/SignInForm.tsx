@@ -6,7 +6,6 @@ import { checkEmail, l } from "@/services/util/util";
 import { firebaseAuth } from "@/services/firebase/firebase";
 import { sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { UserType } from "@/services/firebase/firebase.type";
 import { showModalState, userInfoState } from "@/states/states";
 import { signIn } from "@/services/firebase/auth";
 import { useMutation } from "@tanstack/react-query";
@@ -17,6 +16,7 @@ import { GroupButtonWrapper } from "../molecules/CustomMolecules";
 import { CustomInput } from "../atoms/CustomInput";
 import TranslationFromClient from "./TranslationFromClient";
 import { CustomButton } from "../atoms/CustomButton";
+import { UserType } from "@/types/global.types";
 
 export const SignInForm = ({
   emailPlaceholder,

@@ -24,20 +24,31 @@ const SchedulePage = async () => {
           value: yearRange.toYear
         }
       ], token.uid);
-      const scheduleData = result.dataList;
-      const lastVisible = result.lastVisible;
     
       return (
         <Schedule
-          scheduleDataFromServer={scheduleData}
-          lastVisibleFromServer={lastVisible}
+          scheduleDataFromServer={result}
         />
       );
     } else {
       return (
         <Schedule
-          scheduleDataFromServer={[]}
-          lastVisibleFromServer={""}
+          scheduleDataFromServer={{
+            dataList: [],
+            lastVisible: null,
+            componentsText: {
+              scheduleAddForm: {
+                button: "Add",
+                placeholder: "Enter your schedule.",
+                title: "Enter schedule",
+              },
+              scheduleEditForm: {
+                deleteButton: "Delete",
+                editButton: "Edit",
+                resetButton: "Reset",
+              },
+            },
+          }}
         />
       );
     }

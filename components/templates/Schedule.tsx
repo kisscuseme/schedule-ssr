@@ -1,6 +1,5 @@
 "use client";
 
-import { ScheduleType } from "@/services/firebase/firebase.type";
 import { DefaultCol, DefaultContainer, DefaultRow } from "../atoms/DefaultAtoms";
 import { checkLogin } from "@/services/firebase/auth";
 import { getLastVisible, queryScheduleData } from "@/services/firebase/db";
@@ -14,15 +13,19 @@ import { ScheduleAddForm } from "../organisms/ScheduleAddForm";
 import { styled } from "styled-components";
 import { ScheduleEditForm } from "../organisms/ScheduleEditForm";
 import TranslationFromClient from "../organisms/TranslationFromClient";
-import { LastVisibleType } from "@/types/global.types";
+import { LastVisibleType, ScheduleType } from "@/types/global.types";
 import ScheduleTopBar from "../organisms/ScheduleTopBar";
 import { useQuery } from "@tanstack/react-query";
 import { CustomButton } from "../atoms/CustomButton";
 import { DivisionLine } from "../molecules/DefaultMolecules";
+import { ComponentsTextProps } from "@/types/global.props";
 
 interface ScheduleProps {
-  scheduleDataFromServer: ScheduleType[];
-  lastVisibleFromServer: string | null;
+  scheduleDataFromServer: {
+    dataList: ScheduleType[];
+    lastVisible: string | null;
+    componentsText: ComponentsTextProps;
+  }
 }
 
 const ListWrapper = styled.div`
@@ -36,8 +39,7 @@ const CustomSpinner = styled(Spinner)`
 `;
 
 export default function Schedule({
-  scheduleDataFromServer,
-  lastVisibleFromServer
+  scheduleDataFromServer
 }: ScheduleProps) {
   const [scheduleList, setScheduleList] = useState<ScheduleType[]>([]);
   const [lastVisible,  setLastVisible] = useState<LastVisibleType>(null);
@@ -58,7 +60,7 @@ export default function Schedule({
   const [firstLoading, setFirstLoading] = useState(true);
 
   useEffect(() => {
-    setScheduleList(scheduleDataFromServer);
+    setScheduleList(scheduleDataFromServer.dataList);
     setYearRange(getYearRange(getToday().substring(0,4)));
     checkLogin().then(async (data) => {
       try{
@@ -71,8 +73,8 @@ export default function Schedule({
               email: data?.email||""
             });
           }
-          if(lastVisibleFromServer?.constructor === String) {
-            setNextLastVisible(await getLastVisible(data?.uid||"", lastVisibleFromServer));
+          if(scheduleDataFromServer.lastVisible?.constructor === String) {
+            setNextLastVisible(await getLastVisible(data?.uid||"", scheduleDataFromServer.lastVisible));
           }
         } else {
           document.cookie = "";
@@ -108,16 +110,22 @@ export default function Schedule({
           <Col xs={5}>
             <Row>
               <div>
-                {getReformDate(value?.date || "", ".")} (
-                {l(getDay(value?.date || ""))})
+                {firstLoading
+                  ? value?.date
+                  : `${getReformDate(value?.date || "", ".")} (${l(
+                      getDay(value?.date || "")
+                    )})`}
               </div>
             </Row>
             {value?.toDate && value?.date !== value?.toDate && (
               <>
                 <Row>
                   <div style={{ fontSize: "14px", color: "#6e6e6e" }}>
-                    {"~ " + value?.toDate}{" "}
-                    {`(${l(getDay(value?.toDate || ""))})`}
+                    {firstLoading
+                      ? value?.toDate
+                      : `~ ${getReformDate(value?.toDate || "", ".")} (${l(
+                          getDay(value?.toDate || "")
+                        )})`}
                   </div>
                 </Row>
               </>
@@ -131,6 +139,7 @@ export default function Schedule({
           <ScheduleEditForm
             beforeSchedule={value}
             scheduleList={scheduleList}
+            scheduleEditFormTextFromServer={scheduleDataFromServer.componentsText.scheduleEditForm}
           />
         </Accordion.Body>
       </Accordion.Item>
@@ -234,13 +243,18 @@ export default function Schedule({
     <DefaultContainer>
       <TranslationFromClient />
       <ScheduleTopBar />
-      <ScheduleAddForm scheduleList={scheduleList} />
+      <ScheduleAddForm
+        scheduleList={scheduleList}
+        scheduleAddFormTextFromServer={
+          scheduleDataFromServer.componentsText.scheduleAddForm
+        }
+      />
       <DivisionLine />
       <DefaultRow>
         <DefaultCol>
           <ListWrapper>
             {(!firstLoading && scheduleList.length > 0) ||
-            (firstLoading && scheduleDataFromServer.length > 0) ? (
+            (firstLoading && scheduleDataFromServer.dataList.length > 0) ? (
               <Accordion
                 defaultActiveKey={scheduleAccordionActive}
                 onSelect={(e) => {
@@ -248,7 +262,7 @@ export default function Schedule({
                 }}
               >
                 {accordionChildren ||
-                  makeAccordionChildren(scheduleDataFromServer)}
+                  makeAccordionChildren(scheduleDataFromServer.dataList)}
               </Accordion>
             ) : reloadData ? (
               <DefaultRow>

@@ -39,7 +39,7 @@ export const LanguageSelectorForServer = ({
   return (
     <CustomDropdown
       id="lang-selector-for-server"
-      title={langTitle[langForServer]}
+      title={langTitle[langForServer]+":"}
       initText={getLanguageName(langForServer)}
       items={data}
       onClickItemHandler={selectLanguage}

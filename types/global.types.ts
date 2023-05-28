@@ -1,4 +1,4 @@
-import { DocumentData, DocumentSnapshot, QueryDocumentSnapshot } from "firebase/firestore";
+import { DocumentData, DocumentSnapshot, QueryDocumentSnapshot, WhereFilterOp } from "firebase/firestore";
 
 export interface AlertType {
   title?: string;
@@ -16,3 +16,24 @@ export interface ScheduleInputType {
 }
 
 export type LastVisibleType = QueryDocumentSnapshot<DocumentData> | DocumentSnapshot<DocumentData> | string | null;
+
+export type ScheduleType = {
+  id: string
+  date: string
+  content: string
+  toDate?: string
+} | null;
+
+export type UserType = {
+  uid: string
+  name: string
+  email: string
+} | null;
+
+export type LoginStateType = boolean | null;
+
+export type WhereConfigType = {
+  field: string,
+  operator: WhereFilterOp,
+  value: any
+}

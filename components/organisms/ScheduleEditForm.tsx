@@ -2,24 +2,26 @@
 
 import { Button, Col, Row, useAccordionButton } from "react-bootstrap";
 import { EventHandler, SyntheticEvent, useEffect, useRef, useState } from "react";
-import { ScheduleType } from "@/services/firebase/firebase.type";
 import { deleteScheduleData, updateScheduleData } from "@/services/firebase/db";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { reloadDataState, rerenderDataState, resetClearButtonState, scheduleAccordionActiveState, showModalState, userInfoState } from "@/states/states";
 import { getReformDate, l, sortSchedulList } from "@/services/util/util";
 import { ScheduleInputForm } from "./ScheduleInputForm";
-import { ScheduleInputType } from "@/types/global.types";
+import { ScheduleInputType, ScheduleType } from "@/types/global.types";
 import { useMutation } from "@tanstack/react-query";
 import { CustomButton } from "../atoms/CustomButton";
+import { ScheduleEditFromTextProps } from "@/types/global.props";
 
 interface ScheduleEditFromProps {
-  beforeSchedule: ScheduleType
-  scheduleList: ScheduleType[]
+  beforeSchedule: ScheduleType;
+  scheduleList: ScheduleType[];
+  scheduleEditFormTextFromServer: ScheduleEditFromTextProps;
 }
 
 export const ScheduleEditForm = ({
   beforeSchedule,
-  scheduleList
+  scheduleList,
+  scheduleEditFormTextFromServer
 }: ScheduleEditFromProps) => {
   const [scheduleInput, setScheduleInput] = useState<ScheduleInputType>({
     fromDate: "",
@@ -34,8 +36,10 @@ export const ScheduleEditForm = ({
   const [scheduleAccordionActive, setScheduleAccordionActive] = useRecoilState(scheduleAccordionActiveState);
   const [rerenderData, setRerenderData] = useRecoilState(rerenderDataState);
   const [resetClearButton, setResetClearButton] = useRecoilState(resetClearButtonState);
+  const [firstLoading, setFirstLoading] = useState(true);
 
   useEffect(() => {
+    setFirstLoading(false);
     setScheduleInput({
       fromDate: (beforeSchedule?.date||"").substring(0,10).replaceAll(".","-"),
       toDate: (beforeSchedule?.toDate||"").substring(0,10).replaceAll(".","-"),
@@ -165,7 +169,7 @@ export const ScheduleEditForm = ({
             color="#8e8e8e"
             backgroundColor="#efefef"
           >
-            {l("Reset")}
+            {firstLoading ? scheduleEditFormTextFromServer?.resetButton : l("Reset")}
           </CustomButton>
         </Col>
         <Col>
@@ -176,7 +180,7 @@ export const ScheduleEditForm = ({
             color="#ffffff"
             backgroundColor="#8e8e8e"
           >
-            {l("Edit")}
+            {firstLoading ? scheduleEditFormTextFromServer?.editButton : l("Edit")}
           </CustomButton>
         </Col>
         <Col>
@@ -187,7 +191,7 @@ export const ScheduleEditForm = ({
             color="#ffffff"
             backgroundColor="#ff7171"
           >
-            {l("Delete")}
+            {firstLoading ? scheduleEditFormTextFromServer?.deleteButton : l("Delete")}
           </CustomButton>
         </Col>
       </Row>

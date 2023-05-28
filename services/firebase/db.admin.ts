@@ -1,7 +1,7 @@
-import { getReformDate } from "../util/util";
-import { ScheduleType, WhereConfigType } from "./firebase.type";
+import { getDay, getReformDate, l } from "../util/util";
 import { admin } from "./firebase.admin";
 import { getFullPath, limitNumber } from "./db";
+import { ScheduleType, WhereConfigType } from "@/types/global.types";
 
 const makeRangeQueryFromServer = (
   ref: admin.firestore.Query<admin.firestore.DocumentData>,
@@ -26,8 +26,10 @@ const queryScheduleDataFromServer = async (whereConfig: WhereConfigType[], uid: 
   const scheduleList: ScheduleType[] = [];
   const querySnapshots = await whereRef.orderBy("date", "desc").limit(limitNumber).get();
   querySnapshots.docs.forEach((result) => {
-    const reformDate = getReformDate(result.data()["date"], ".");
-    const reformToDate = result.data()["toDate"]?getReformDate(result.data()["toDate"], "."):undefined;
+    const fromDate = result.data()["date"];
+    const toDate = result.data()["toDate"];
+    const reformDate = `${getReformDate(fromDate, ".")} (${l(getDay(getReformDate(fromDate, ".")))})`;
+    const reformToDate = toDate ? `${getReformDate(toDate, ".")} (${l(getDay(getReformDate(toDate, ".")))})` : "";
     scheduleList.push({
       id: result.id,
       date: reformDate,
@@ -38,10 +40,22 @@ const queryScheduleDataFromServer = async (whereConfig: WhereConfigType[], uid: 
   const nextLastVisible = scheduleList.length < limitNumber ? null : querySnapshots.docs[querySnapshots.docs.length - 1].id;
   return {
     lastVisible: nextLastVisible,
-    dataList: scheduleList
+    dataList: scheduleList,
+    componentsText: {
+      scheduleAddForm: {
+        button: l("Add"),
+        placeholder: l("Enter your schedule."),
+        title: l("Enter schedule")
+      },
+      scheduleEditForm: {
+        resetButton: l("Reset"),
+        editButton:l("Edit"),
+        deleteButton: l("Delete")
+      }
+    }
   };
 }
 
 export {
-  queryScheduleDataFromServer
+  queryScheduleDataFromServer,
 };

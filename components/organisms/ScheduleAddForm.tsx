@@ -1,11 +1,10 @@
 "use client";
 
-import { ScheduleType } from "@/services/firebase/firebase.type"
 import { Accordion, Col, Row } from "react-bootstrap"
 import { ScheduleInputForm } from "./ScheduleInputForm"
 import { getReformDate, getToday, l, sortSchedulList } from "@/services/util/util"
 import { useEffect, useState } from "react";
-import { ScheduleInputType } from "@/types/global.types";
+import { ScheduleInputType, ScheduleType } from "@/types/global.types";
 import { styled } from "styled-components";
 import { useMutation } from "@tanstack/react-query";
 import { insertScheduleData } from "@/services/firebase/db";
@@ -13,9 +12,11 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { rerenderDataState, showModalState, userInfoState } from "@/states/states";
 import { CustomButton } from "../atoms/CustomButton";
 import { accordionCustomStyle } from "../molecules/CustomMolecules";
+import { ScheduleAddFromTextProps } from "@/types/global.props";
 
 interface ScheduleAddFromProps {
-  scheduleList: ScheduleType[]
+  scheduleList: ScheduleType[];
+  scheduleAddFormTextFromServer: ScheduleAddFromTextProps;
 }
 
 const InputFormWrapper = styled.div`
@@ -23,7 +24,8 @@ const InputFormWrapper = styled.div`
 `;
 
 export const ScheduleAddForm = ({
-  scheduleList
+  scheduleList,
+  scheduleAddFormTextFromServer
 }: ScheduleAddFromProps) => {
   const setShowModal = useSetRecoilState(showModalState);
   const userInfo = useRecoilValue(userInfoState);
@@ -34,13 +36,15 @@ export const ScheduleAddForm = ({
     schedule: ""
   });
   const [fold, setFold] = useState(false);
+  const [firstLoading, setFirstLoading] = useState(true);
 
   useEffect(() => {
+    setFirstLoading(false);
     setScheduleInput({
       fromDate: getToday(),
       toDate: getToday(),
       schedule: ""
-    })
+    });
   }, []);
 
   const insertScheduleMutation = useMutation(insertScheduleData, {
@@ -97,15 +101,21 @@ export const ScheduleAddForm = ({
       >
         <Accordion.Item eventKey="ScheduleAddForm">
           <Accordion.Header>
-            <div color="#5f5f5f">{`${l("Enter schedule")} ${
-              fold ? "▲" : "▼"
-            }`}</div>
+            <div color="#5f5f5f">{`${
+              firstLoading
+                ? scheduleAddFormTextFromServer?.title
+                : l("Enter schedule")
+            } ${fold ? "▲" : "▼"}`}</div>
           </Accordion.Header>
           <Accordion.Body>
             <ScheduleInputForm
               scheduleInput={scheduleInput}
               setScheduleInput={setScheduleInput}
-              scheduleInputPlaceholder={l("Enter your schedule.")}
+              scheduleInputPlaceholder={
+                firstLoading
+                  ? scheduleAddFormTextFromServer?.placeholder
+                  : l("Enter your schedule.")
+              }
             />
             <Row>
               <Col>
@@ -114,7 +124,9 @@ export const ScheduleAddForm = ({
                   backgroundColor="#3e3e3e"
                   color="#fefefe"
                 >
-                  {l("Add")}
+                  {firstLoading
+                    ? scheduleAddFormTextFromServer?.button
+                    : l("Add")}
                 </CustomButton>
               </Col>
             </Row>
