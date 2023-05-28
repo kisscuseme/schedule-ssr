@@ -13,8 +13,7 @@
   min-height: 100vh;
 }
 
-input[type="date"]
-{
+input[type="date"] {
   appearance: textfield;
   -webkit-appearance: textfield;
   -moz-appearance: textfield;

@@ -9,13 +9,12 @@ export default function SignUp() {
   return (
     <DefaultContainer>
       <TopBar>
+        {/* 서버에서 번역을 적용하기 위한 컴포넌트 */}
         <LanguageSelectorForServer
-          langForServer={cookies().get("lang")?.value||"kr"}
+          langForServer={cookies().get("lang")?.value || "kr"}
         />
       </TopBar>
-      <DefaultTitle>
-        {l("Create an account")}
-      </DefaultTitle>
+      <DefaultTitle>{l("Create an account")}</DefaultTitle>
       <SignUpForm
         emailPlaceholder={l("E-mail")}
         namePlaceholder={l("Name")}

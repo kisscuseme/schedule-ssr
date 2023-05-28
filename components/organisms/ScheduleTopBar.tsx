@@ -2,22 +2,24 @@
 
 import { DefaultCol, DefaultRow } from "../atoms/DefaultAtoms";
 import { checkLogin, logOut } from "@/services/firebase/auth";
-import { getToday, getYearList, l } from "@/services/util/util";
-import { ReactNode, useEffect, useState } from "react";
+import { getToday, getYearList, l, setCookie } from "@/services/util/util";
 import { Col, Nav, Navbar, Offcanvas, Row } from "react-bootstrap";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { isLogedInState, selectedYearState, showModalState, userInfoState } from "@/states/states";
+import {
+  selectedYearState,
+  showModalState,
+  userInfoState,
+} from "@/states/states";
 import { useMutation } from "@tanstack/react-query";
 import { deleteUser } from "firebase/auth";
-import { CustomDropdown, DropdownDataProps } from "../atoms/CustomDropdown";
+import { CustomDropdown } from "../atoms/CustomDropdown";
 import { TopBar } from "../molecules/TopBar";
 import { DivisionLine } from "../molecules/DefaultMolecules";
 import { LanguageSelectorForClient } from "./LanguageSelectorForClient";
 import { styled } from "styled-components";
-import { LoginStateType } from "@/types/global.types";
 
 const NavbarOffcanvas = styled(Navbar.Offcanvas)`
-  font-family: 'GangwonEdu_OTFBoldA';
+  font-family: "GangwonEdu_OTFBoldA";
 `;
 
 const NavbarToggle = styled(Navbar.Toggle)`
@@ -43,40 +45,20 @@ const NavLinkPink = styled(Nav.Link)`
 
 export default function ScheduleTopBar() {
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
-  const setIsLogedIn = useSetRecoilState<LoginStateType>(isLogedInState);
   const setShowModal = useSetRecoilState(showModalState);
-  const [yearList, setYearList] = useState<DropdownDataProps[]>([]);
-  const [yearSelectDropdown, setYearSelectDropdown] = useState<ReactNode>(<></>);
   const setSelectedYear = useSetRecoilState(selectedYearState);
 
-  useEffect(() => {
-    setYearList(getYearList());
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Dropdown에서 선택한 날짜를 recoil 전역 상태에 바인딩
+  const selectYear = (year: string) => {
+    setSelectedYear(year);
+  };
 
-  useEffect(() => {
-    const selectYear = (year: string) => {
-      setSelectedYear(year);
-    }
-
-    setYearSelectDropdown(
-      <CustomDropdown
-        initText={getToday().substring(0,4)}
-        items={yearList}
-        onClickItemHandler={selectYear}
-        id="schedule-year-dropdown"
-      />
-    );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[yearList]);
-
-
+  // 로그아웃 시 react query 활용
   const signOutMutation = useMutation(logOut, {
     onSuccess(data) {
-      if(data) {
-        window.localStorage.setItem("email", userInfo?.email||"");
+      if (data) {
+        setCookie("email", userInfo?.email || "");
         setUserInfo(null);
-        setIsLogedIn(null);
         window.location.href = "/";
       }
     },
@@ -89,14 +71,15 @@ export default function ScheduleTopBar() {
       show: true,
       confirm: () => {
         signOutMutation.mutate();
-      }
+      },
     });
-  }
+  };
 
+  // 계정 삭제 시 react query 활용
   const deleteUserMutation = useMutation(deleteUser, {
     onSuccess() {
       window.location.href = "/";
-    }
+    },
   });
 
   const deleteUserHandler = () => {
@@ -106,11 +89,11 @@ export default function ScheduleTopBar() {
       show: true,
       confirm: () => {
         checkLogin().then((user) => {
-          if(user) deleteUserMutation.mutate(user);
+          if (user) deleteUserMutation.mutate(user);
         });
-      }
+      },
     });
-  }
+  };
 
   return (
     <TopBar>
@@ -162,7 +145,13 @@ export default function ScheduleTopBar() {
           </Navbar>
         </DefaultCol>
         <DefaultCol>
-          <div style={{ float: "right" }}>{yearSelectDropdown}</div>
+          <div style={{ float: "right" }}>
+            <CustomDropdown
+              initText={getToday().substring(0, 4)}
+              items={getYearList()}
+              onClickItemHandler={selectYear}
+            />
+          </div>
         </DefaultCol>
       </DefaultRow>
     </TopBar>

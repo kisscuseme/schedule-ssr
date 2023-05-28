@@ -25,15 +25,17 @@ interface AlertOwnProps {
    * confirm
    */
   confirm?: () => void;
-};
+}
 
 export type AlertProps = AlertOwnProps & ModalProps;
 
 const CustomModal = styled(Modal)`
-  font-family: 'GangwonEdu_OTFBoldA', 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: "GangwonEdu_OTFBoldA", "Nunito Sans", "Helvetica Neue", Helvetica,
+    Arial, sans-serif;
 `;
 
-
+// 기본 Alert 컴포넌트 정의
+// showModalState와 함께 사용
 export const Alert = ({
   show,
   title,
@@ -43,7 +45,7 @@ export const Alert = ({
   ...props
 }: AlertProps) => {
   const setShowModal = useSetRecoilState(showModalState);
-  if(!show) {
+  if (!show) {
     title = "";
     content = "";
     callback = undefined;
@@ -58,30 +60,37 @@ export const Alert = ({
       show={show}
     >
       <Modal.Header>
-        <Modal.Title id="contained-modal-title-vcenter" style={{margin: "auto"}}>
+        <Modal.Title
+          id="contained-modal-title-vcenter"
+          style={{ margin: "auto" }}
+        >
           {title}
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        {content}
-      </Modal.Body>
+      <Modal.Body>{content}</Modal.Body>
       <Modal.Footer>
-        {confirm && <CustomButton
-          onClick={() => {
-            setShowModal({
-              title: "",
-              content: "",
-              callback: undefined,
-              confirm: undefined,
-              show: false
-            });
-            if(confirm) confirm();            
-          }}
-          backgroundColor="#8e8e8e"
-          color="#ffffff"
-        >
-          {l("Confirm")}
-        </CustomButton>}
+        {
+          // 확인 버튼 사용 시
+          confirm && (
+            <CustomButton
+              onClick={() => {
+                setShowModal({
+                  title: "",
+                  content: "",
+                  callback: undefined,
+                  confirm: undefined,
+                  show: false,
+                });
+                if (confirm) confirm();
+              }}
+              backgroundColor="#8e8e8e"
+              color="#ffffff"
+            >
+              {l("Confirm")}
+            </CustomButton>
+          )
+        }
+        {/* 닫기 버튼 */}
         <CustomButton
           onClick={() => {
             setShowModal({
@@ -89,9 +98,9 @@ export const Alert = ({
               content: "",
               callback: undefined,
               confirm: undefined,
-              show: false
+              show: false,
             });
-            if(callback) callback();
+            if (callback) callback();
           }}
         >
           {l("Close")}
@@ -99,4 +108,4 @@ export const Alert = ({
       </Modal.Footer>
     </CustomModal>
   );
-}
+};

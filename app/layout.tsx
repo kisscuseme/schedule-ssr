@@ -1,24 +1,25 @@
 import "./global.css";
 import ReactQueryWrapper from "@/components/organisms/ReactQueryWrapper";
 import RecoilRootWrapper from "@/components/organisms/RecoilRootWrapper";
-import StyledComponentsRegistry from "./registry";
+import StyledComponentsRegistry from "../components/organisms/StyledComponentsRegistry";
 import TranslationFromServer from "@/components/organisms/TranslationFromServer";
 import ShowAlert from "@/components/organisms/ShowAlert";
 
+// 기본 메타 정보
 export const metadata = {
-  title: 'SCHEDULE',
-  description: 'Manage your schedule',
+  title: "SCHEDULE",
+  description: "Manage your schedule",
   openGraph: {
-    title: 'SCHEDULE',
-    description: 'Manage your schedule',
-    images: '/logo.png'
-  }
-}
+    title: "SCHEDULE",
+    description: "Manage your schedule",
+    images: "/logo.png",
+  },
+};
 
 export default function RootLayout({
-  children
+  children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">

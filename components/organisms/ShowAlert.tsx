@@ -5,6 +5,7 @@ import React from "react";
 import { useRecoilValue } from "recoil";
 import { Alert } from "../molecules/Alert";
 
+// Alert 기능을 전역적으로 사용하기 위한 컴포넌트
 export default function ShowAlert() {
   const showModal = useRecoilValue(showModalState);
 

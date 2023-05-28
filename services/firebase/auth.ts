@@ -1,7 +1,13 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, User } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  User,
+} from "firebase/auth";
 import { l } from "../util/util";
 import { firebaseAuth } from "./firebase";
 
+// firebase 로그인 기능
 const signIn = async (email: string, password: string) => {
   try {
     const curUserInfo = await signInWithEmailAndPassword(
@@ -21,6 +27,7 @@ const signIn = async (email: string, password: string) => {
   }
 };
 
+// firebase 계정 생성 기능
 const signUp = async (email: string, password: string) => {
   try {
     const createdUser = await createUserWithEmailAndPassword(
@@ -38,30 +45,35 @@ const signUp = async (email: string, password: string) => {
       case "auth/email-already-in-use":
         throw "This account has already been created.";
       default:
-        throw "An error occurred while creating an account." + "\n" + error.message;
+        throw (
+          "An error occurred while creating an account." + "\n" + error.message
+        );
     }
   }
 };
 
+
+// firebase 로그아웃 기능
 const logOut = async () => {
   try {
     await signOut(firebaseAuth);
     return true;
-  } catch(error: any) {
+  } catch (error: any) {
     throw l("An error occurred while logging out.") + "\n" + error.message;
   }
-}
+};
 
+// 클라이언트에서 로그인 여부 체크가 필요한 경우
 const checkLogin = async (): Promise<User | null> => {
   return new Promise((resolve) => {
     firebaseAuth.onAuthStateChanged((user) => {
       if (user && user.emailVerified) {
-          resolve(user);
+        resolve(user);
       } else {
         resolve(null);
       }
     })();
   });
-}
+};
 
 export { signIn, signUp, logOut, checkLogin };

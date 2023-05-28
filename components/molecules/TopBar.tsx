@@ -8,15 +8,11 @@ const TopBarRow = styled(DefaultRow)`
   height: 70px;
 `;
 
-
-export const TopBar = ({
-  children
-}: { children: ReactNode }) => {
+// 상단 바 구성에 사용
+export const TopBar = ({ children }: { children: ReactNode }) => {
   return (
     <TopBarRow>
-      <DefaultCol>
-        {children}
-      </DefaultCol>
+      <DefaultCol>{children}</DefaultCol>
     </TopBarRow>
   );
-}
+};

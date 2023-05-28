@@ -1,10 +1,4 @@
-import { styled } from "styled-components";
-
-export const GroupButtonWrapper = styled.div`
-  width: 100%;
-  text-align: center;
-`;
-
+// Accordion 스타일 오버라이딩 (더 나은 방법 찾는 중)
 export const accordionCustomStyle = `
   .accordion {
     background-color: transparent;

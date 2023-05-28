@@ -1,10 +1,14 @@
 "use client";
 
 import { signUp } from "@/services/firebase/auth";
-import { checkEmail, checkPassword, l } from "@/services/util/util";
+import { checkEmail, checkPassword, l, setCookie } from "@/services/util/util";
 import { showModalState } from "@/states/states";
 import { useMutation } from "@tanstack/react-query";
-import { sendEmailVerification, updateProfile, UserCredential } from "firebase/auth";
+import {
+  sendEmailVerification,
+  updateProfile,
+  UserCredential,
+} from "firebase/auth";
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { Form } from "react-bootstrap";
 import { useForm } from "react-hook-form";
@@ -15,7 +19,8 @@ import { CenterCol } from "../atoms/CustomAtoms";
 import TranslationFromClient from "./TranslationFromClient";
 import { CustomButton } from "../atoms/CustomButton";
 
-interface SignUpFormProps {
+// sign up form props
+export interface SignUpFormProps {
   emailPlaceholder: string;
   namePlaceholder: string;
   passwordPlaceholder: string;
@@ -28,9 +33,8 @@ export default function SignUpForm({
   namePlaceholder,
   passwordPlaceholder,
   reconfirmPasswordPlaceholder,
-  signUpButtonText
+  signUpButtonText,
 }: SignUpFormProps) {
-  
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -41,82 +45,98 @@ export default function SignUpForm({
   const nameClearButtonRef = useRef<HTMLButtonElement>(null);
   const passwordClearButtonRef = useRef<HTMLButtonElement>(null);
   const reconfirmPasswordClearButtonRef = useRef<HTMLButtonElement>(null);
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit, reset } = useForm(); // react hook form 기능 활용
 
+  // 데이터가 빈 값인 경우 clear 버튼이 사라지지 않는 문제 수정
   useEffect(() => {
-    if(password === "") {
+    if (password === "") {
       passwordClearButtonRef.current?.click();
     }
-    if(email === "") {
+    if (email === "") {
       emailClearButtonRef.current?.click();
     }
-    if(name === "") {
+    if (name === "") {
       nameClearButtonRef.current?.click();
     }
-    if(reconfirmPassword === "") {
+    if (reconfirmPassword === "") {
       reconfirmPasswordClearButtonRef.current?.click();
     }
   }, [password, email, name, reconfirmPassword]);
 
   const emailChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.currentTarget.value);
-  }
+  };
 
   const nameChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setName(e.currentTarget.value);
-  }
+  };
 
   const passwordChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setPassword(e.currentTarget.value);
-  }
+  };
 
   const reconfirmPasswordChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setReconfirmPassword(e.currentTarget.value);
-  }
+  };
 
-  const signUpWithEmail = (loginInfo: {email: string, password: string}) => {
+  // react query 사용 시 오브젝트 형태의 파라미터만 받을 수 있어서 변경
+  const signUpWithEmail = (loginInfo: { email: string; password: string }) => {
     return signUp(loginInfo.email, loginInfo.password);
-  }
+  };
 
+  // 계정 생성 시 react query 활용
   const signUpMutation = useMutation(signUpWithEmail, {
     onSuccess: async (data: UserCredential | string) => {
       try {
-        if(typeof data === "string") {
+        if (typeof data === "string") {
+          // 가져온 데이터가 string type일 경우 에러 메시지임
           setErrorMsg(data);
         } else {
-          await updateProfile(data.user, {displayName: name});
+          // 입력한 name 값으로 displayName 값 수정
+          await updateProfile(data.user, { displayName: name });
+          // 인증 메일 전송
           await sendEmailVerification(data.user);
-          localStorage.setItem("email", email);
+          // 이메일 정보 쿠키에 저장
+          setCookie("email", email);
           setShowModal({
             show: true,
             title: l("Check"),
-            content: `${l("Your account creation is complete.")} ${l("Please check the verification e-mail sent.")}`,
+            content: `${l("Your account creation is complete.")} ${l(
+              "Please check the verification e-mail sent."
+            )}`,
             callback: () => {
               reset();
               window.location.href = "/";
-            }
+            },
           });
         }
-      } catch(error: any) {
+      } catch (error: any) {
         setErrorMsg(error.message);
       }
     },
     onError(error: any) {
       setErrorMsg(error);
-    }
+    },
   });
 
-  const signUpHandleSubmit = (email: string, name: string, password: string, reconfirmPassword: string) => {
-    if(email === "") {
+  const signUpHandleSubmit = (
+    email: string,
+    name: string,
+    password: string,
+    reconfirmPassword: string
+  ) => {
+    if (email === "") {
       setErrorMsg(l("Please enter your e-mail."));
-    } else if(!checkEmail(email)) {
+    } else if (!checkEmail(email)) {
       setErrorMsg(l("Please check your e-mail format."));
-    } else if(name === "") {
+    } else if (name === "") {
       setErrorMsg(l("Enter your name, please."));
-    } else if(!checkPassword(password)) {
+    } else if (!checkPassword(password)) {
       setErrorMsg(l("Please enter a password of at least 6 digits."));
-    } else if(password !== reconfirmPassword) {
-      setErrorMsg(l("The entered password and reconfirm password are not the same."));
+    } else if (password !== reconfirmPassword) {
+      setErrorMsg(
+        l("The entered password and reconfirm password are not the same.")
+      );
     } else {
       setErrorMsg("");
       setShowModal({
@@ -125,16 +145,17 @@ export default function SignUpForm({
         content: l("Would you like to create an account?"),
         confirm: () => {
           signUpMutation.mutate({ email: email, password });
-        }
+        },
       });
     }
   };
 
+  // 엔터 입력 시 버튼 클릭 효과
   const enterKeyUpEventHandler = (e: KeyboardEvent<HTMLInputElement>) => {
-    if(e.key === "Enter") {
+    if (e.key === "Enter") {
       signUpHandleSubmit(email, name, password, reconfirmPassword);
     }
-  }
+  };
 
   return (
     <Form

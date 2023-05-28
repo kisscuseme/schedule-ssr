@@ -1,21 +1,18 @@
+// 로그인 페이지 메타 정보
 export const metadata = {
-  title: 'SCHEDULE - Sign In',
-  description: 'Please log in.',
+  title: "SCHEDULE - Sign In",
+  description: "Please log in.",
   openGraph: {
-    title: 'SCHEDULE - Sign In',
-    description: 'Please log in.',
-    images: '/logo.png'
-  }
-}
+    title: "SCHEDULE - Sign In",
+    description: "Please log in.",
+    images: "/logo.png",
+  },
+};
 
 export default function RootLayout({
-  children
+  children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  return (
-    <>
-      {children}
-    </>
-  );
+  return <>{children}</>;
 }

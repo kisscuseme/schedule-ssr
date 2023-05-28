@@ -1,22 +1,41 @@
 "use client";
 
-import { Form } from "react-bootstrap";
+import { Form, Row } from "react-bootstrap";
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
-import { checkEmail, l } from "@/services/util/util";
+import { checkEmail, getCookie, l, setCookie } from "@/services/util/util";
 import { firebaseAuth } from "@/services/firebase/firebase";
 import { sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
-import { useRecoilState, useSetRecoilState } from "recoil";
-import { showModalState, userInfoState } from "@/states/states";
+import { useSetRecoilState } from "recoil";
+import { showModalState } from "@/states/states";
 import { signIn } from "@/services/firebase/auth";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { DefaultCol, DefaultRow, GroupButton } from "../atoms/DefaultAtoms";
-import { CenterCol, SignInGroupButtonRow } from "../atoms/CustomAtoms";
-import { GroupButtonWrapper } from "../molecules/CustomMolecules";
+import { CenterCol } from "../atoms/CustomAtoms";
 import { CustomInput } from "../atoms/CustomInput";
 import TranslationFromClient from "./TranslationFromClient";
 import { CustomButton } from "../atoms/CustomButton";
-import { UserType } from "@/types/global.types";
+import { styled } from "styled-components";
+
+// sign in form props
+export interface SignInFormProps {
+  emailPlaceholder: string;
+  passwordPlaceholder: string;
+  signInButtonText: string;
+  resetPasswordButtonText: string;
+  signUpButtonText: string;
+}
+
+// 그룹 버튼을 위한 Row
+const SignInGroupButtonRow = styled(Row)`
+  min-height: 120px;
+`;
+
+// 그룹 버튼 중앙 정렬
+const GroupButtonWrapper = styled.div`
+  width: 100%;
+  text-align: center;
+`;
 
 export const SignInForm = ({
   emailPlaceholder,
@@ -24,69 +43,65 @@ export const SignInForm = ({
   signInButtonText,
   resetPasswordButtonText,
   signUpButtonText,
-}: {
-  emailPlaceholder: string;
-  passwordPlaceholder: string;
-  signInButtonText: string;
-  resetPasswordButtonText: string;
-  signUpButtonText: string;
-}) => {
+}: SignInFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-  const [userInfo, setUserInfo] = useRecoilState<UserType>(userInfoState);
   const setShowModal = useSetRecoilState(showModalState);
   const emailClearButtonRef = useRef<HTMLButtonElement>(null);
   const passwordClearButtonRef = useRef<HTMLButtonElement>(null);
-  const { register, handleSubmit, reset } = useForm();
   const [savedEmail, setSavedEmail] = useState("");
+  const { register, handleSubmit, reset } = useForm(); // react hook form 기능 활용
 
   useEffect(() => {
-    setSavedEmail(window.localStorage.getItem("email") || "");
+    // 기존 로그인 이메일이 있을 경우 가져 옴
+    setSavedEmail(getCookie("email") || "");
   }, []);
 
   useEffect(() => {
+    // 최초 로딩 시 input 컴포넌트 값에 기존 로그인 이메일 바인딩
     setEmail(savedEmail);
-    reset({email: savedEmail});
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    reset({ email: savedEmail });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [savedEmail]);
 
+  // 데이터가 빈 값인 경우 clear 버튼이 사라지지 않는 문제 수정
   useEffect(() => {
-    if(password === "") {
+    if (password === "") {
       passwordClearButtonRef.current?.click();
     }
-    if(email === "") {
+    if (email === "") {
       emailClearButtonRef.current?.click();
     }
   }, [password, email]);
 
-  const signInWithEmail = (loginInfo: {email: string, password: string}) => {
+  // react query 사용 시 오브젝트 형태의 파라미터만 받을 수 있어서 변경
+  const signInWithEmail = (loginInfo: { email: string; password: string }) => {
     return signIn(loginInfo.email, loginInfo.password);
-  }
+  };
 
+  // 로그인 시 react query 활용
   const signInMutation = useMutation(signInWithEmail, {
     onSuccess(data) {
-      console.log("success");
-      if(typeof data !== 'string') {
+      if (typeof data !== "string") {
+        // form 필드 값 클리어
         reset();
-        if(data.user.emailVerified) {
-          if(userInfo === null) {
-            setUserInfo({
-              uid: data.user.uid,
-              name: data.user.displayName||"",
-              email: data.user.email||""
-            });
-          }
-          window.localStorage.setItem("email", email);
+        // 이메일 인증이 된 경우만 로그인 허용
+        if (data.user.emailVerified) {
+          // 로그인 성공한 이메일 쿠키에 저장
+          setCookie("email", email);
+          // 루트 페이지로 이동하여 로그인 여부 체크 후 진입
           window.location.href = "/";
         } else {
           setShowModal({
             show: true,
             title: l("Check"),
-            content: `${l("E-mail verification has not been completed.")} ${l("Would you like to resend the verification e-mail?")}`,
+            content: `${l("E-mail verification has not been completed.")} ${l(
+              "Would you like to resend the verification e-mail?"
+            )}`,
             confirm: async () => {
               setShowModal({
-                show: false
+                show: false,
               });
               try {
                 await sendEmailVerification(data.user);
@@ -94,12 +109,16 @@ export const SignInForm = ({
                 setShowModal({
                   show: true,
                   title: l("Check"),
-                  content: l("Resending of verification e-mail has been completed.")
+                  content: l(
+                    "Resending of verification e-mail has been completed."
+                  ),
                 });
-              } catch(error: any) {
+              } catch (error: any) {
                 let message;
-                if(error.code === "auth/too-many-requests" ) {
-                  message = `${l("Lots of attempts.")} ${l("Please try again later.")}`;
+                if (error.code === "auth/too-many-requests") {
+                  message = `${l("Lots of attempts.")} ${l(
+                    "Please try again later."
+                  )}`;
                 } else {
                   message = error.message;
                 }
@@ -107,10 +126,10 @@ export const SignInForm = ({
                 setShowModal({
                   show: true,
                   title: l("Check"),
-                  content: message
+                  content: message,
                 });
               }
-            }
+            },
           });
         }
       } else {
@@ -119,19 +138,19 @@ export const SignInForm = ({
     },
     onError(error: any) {
       setErrorMsg(l(error));
-    }
+    },
   });
 
   const signInHandleSubmit = (email: string, password: string) => {
-    if(email === "") {
+    if (email === "") {
       setErrorMsg("Please enter your e-mail.");
-    } else if(!checkEmail(email)) {
+    } else if (!checkEmail(email)) {
       setErrorMsg("Please check your email format.");
-    } else if(password === "") {
+    } else if (password === "") {
       setErrorMsg("Please enter your password.");
     } else {
       setErrorMsg("");
-      signInMutation.mutate({ email: email, password: password });
+      signInMutation.mutate({ email, password });
     }
   };
 
@@ -139,36 +158,37 @@ export const SignInForm = ({
     try {
       return await sendPasswordResetEmail(firebaseAuth, email);
     } catch (error: any) {
-      setErrorMsg(`${l("An error occurred while sending e-mail.")}\n` + error.message);
+      setErrorMsg(
+        `${l("An error occurred while sending e-mail.")}\n` + error.message
+      );
     }
-  }
+  };
 
   const resetPasswordMutation = useMutation(resetPassword, {
     onError: (error: any) => {
       let message;
-      if(error.code === "auth/too-many-requests" ) {
+      if (error.code === "auth/too-many-requests") {
         message = `${l("Lots of attempts.")} ${l("Please try again later.")}`;
-
       } else {
         message = error.message;
       }
       setShowModal({
         show: true,
         title: l("Check"),
-        content: message
+        content: message,
       });
     },
     onSuccess: () => {
       setShowModal({
         show: true,
         title: l("Check"),
-        content: l("E-mail sending has been completed.")
+        content: l("E-mail sending has been completed."),
       });
     },
   });
 
   const resetPasswordClickHandler = () => {
-    if(email === "") {
+    if (email === "") {
       setErrorMsg("Please enter your e-mail.");
     } else if (!checkEmail(email)) {
       setErrorMsg("Please check your email format.");
@@ -177,10 +197,12 @@ export const SignInForm = ({
         setShowModal({
           show: true,
           title: l("Check"),
-          content: l("Would you like to send a password reset e-mail to ?", {email: email}),
+          content: l("Would you like to send a password reset e-mail to ?", {
+            email: email,
+          }),
           confirm: () => {
             resetPasswordMutation.mutate();
-          }
+          },
         });
       } catch (error: any) {
         setErrorMsg(error.message);
@@ -189,22 +211,23 @@ export const SignInForm = ({
   };
 
   const signUpClickHandler = () => {
-    window.location.href = '/signup';
-  }
+    window.location.href = "/signup";
+  };
 
   const emailChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.currentTarget.value);
-  }
+  };
 
   const passwordChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setPassword(e.currentTarget.value);
-  }
+  };
 
+  // 엔터 입력 시 버튼 클릭 효과
   const enterKeyUpEventHandler = (e: KeyboardEvent<HTMLInputElement>) => {
-    if(e.key === "Enter") {
+    if (e.key === "Enter") {
       signInHandleSubmit(email, password);
     }
-  }
+  };
 
   return (
     <Form
@@ -284,4 +307,4 @@ export const SignInForm = ({
       </DefaultRow>
     </Form>
   );
-}
+};
