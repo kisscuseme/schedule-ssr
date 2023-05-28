@@ -15,7 +15,7 @@ import {
   where,
   writeBatch,
 } from "firebase/firestore";
-import { getReformDate } from "../util/util";
+import { decrypt, encrypt, getReformDate } from "../util/util";
 import { firebaseDb } from "./firebase";
 import { ScheduleType, WhereConfigType } from "@/types/types";
 
@@ -85,7 +85,7 @@ const queryScheduleData = async (
       id: result.id,
       date: reformDate,
       toDate: reformToDate,
-      content: result.data()["content"],
+      content: decrypt(result.data()["content"], uid) || "",
     });
   });
 
@@ -104,7 +104,7 @@ const queryScheduleData = async (
 const updateScheduleData = async (updateInfo: {
   uid: string;
   scheduleId: string;
-  newSchedule: object;
+  newSchedule: ScheduleType;
 }) => {
   try {
     await runTransaction(firebaseDb, async (transaction) => {
@@ -114,6 +114,10 @@ const updateScheduleData = async (updateInfo: {
       if (!scheduleDoc.exists()) {
         throw "Document does not exist!";
       }
+      if (updateInfo.newSchedule)
+        updateInfo.newSchedule.content =
+          encrypt(updateInfo.newSchedule.content, updateInfo.uid) ||
+          updateInfo.newSchedule.content;
       const updateSchedule = {
         ...scheduleDoc.data(),
         ...updateInfo.newSchedule,
@@ -129,7 +133,7 @@ const updateScheduleData = async (updateInfo: {
 // firebase 데이터 추가
 const insertScheduleData = async (insertInfo: {
   uid: string;
-  newSchedule: object;
+  newSchedule: ScheduleType;
 }) => {
   const fullPath = getFullPath(insertInfo.uid);
 
@@ -138,6 +142,10 @@ const insertScheduleData = async (insertInfo: {
 
   const docRef = doc(collection(firebaseDb, fullPath));
   const scheduleRef = doc(firebaseDb, fullPath, docRef.id);
+  if (insertInfo.newSchedule)
+    insertInfo.newSchedule.content =
+      encrypt(insertInfo.newSchedule.content, insertInfo.uid) ||
+      insertInfo.newSchedule.content;
   batch.set(scheduleRef, insertInfo.newSchedule);
 
   // Commit the batch

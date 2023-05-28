@@ -1,5 +1,6 @@
 import { ScheduleType } from "@/types/types";
 import { t } from "i18next";
+import CryptoJS from "crypto-js";
 
 // 입력 받은 날짜로 요일 계산
 const getDay = (date: string) => {
@@ -136,6 +137,45 @@ const getCookie = (name: string) => {
 const deleteCookie = (name: string) => {
   document.cookie =
     encodeURIComponent(name) + "=; expires=Thu, 01 JAN 1999 00:00:10 GMT";
+};
+
+// 시크릿 키 생성
+const getSecretKey = (key: string) => {
+  const encryptedSecretKey = CryptoJS.SHA256(key).toString();
+  const doubleEncryptedSecretKey = CryptoJS.SHA384(encryptedSecretKey).toString();
+  const tripleEncryptedSecretKey = CryptoJS.SHA512(doubleEncryptedSecretKey).toString();
+  return tripleEncryptedSecretKey;
+}
+
+// 암호화
+export const encrypt = (payload: string, key: string) => {
+  try {
+    if (!key) {
+      // console.log("No Key.");
+      return payload;
+    }
+    const encrypted = CryptoJS.AES.encrypt(payload, getSecretKey(key)).toString();
+    return encrypted;
+  } catch (e) {
+    // console.log("Encryption error occur : ", e);
+    return payload;
+  }
+};
+
+// 복호화
+export const decrypt = (encrypted: string, key: string) => {
+  try {
+    if (!key) {
+      // console.log("No Key.");
+      return encrypted;
+    }
+    const decrypted_bytes = CryptoJS.AES.decrypt(encrypted, getSecretKey(key));
+    const decrypted = decrypted_bytes.toString(CryptoJS.enc.Utf8);
+    return decrypted||encrypted;
+  } catch (e) {
+    // console.log("Decryption error occur : ", e);
+    return encrypted;
+  }
 };
 
 export {

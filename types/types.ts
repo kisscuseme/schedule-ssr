@@ -31,7 +31,7 @@ export type LastVisibleType =
 
 // firebase schedule data type
 export type ScheduleType = {
-  id: string;
+  id?: string;
   date: string;
   content: string;
   toDate?: string;

@@ -1,7 +1,11 @@
-import { getDay, getReformDate, l } from "../util/util";
+import { decrypt, getDay, getReformDate, l } from "../util/util";
 import { admin } from "./firebase.admin";
 import { getFullPath, limitNumber } from "./db";
-import { ComponentsTextType, ScheduleType, WhereConfigType } from "@/types/types";
+import {
+  ComponentsTextType,
+  ScheduleType,
+  WhereConfigType,
+} from "@/types/types";
 
 // 서버에서 firestore의 where 조건문을 만들기 위한 함수
 const makeRangeQueryFromServer = (
@@ -53,7 +57,7 @@ const queryScheduleDataFromServer = async (
       id: result.id,
       date: reformDate,
       toDate: reformToDate,
-      content: result.data()["content"],
+      content: decrypt(result.data()["content"], uid) || "",
     });
   });
   // 조회 개수 제한 값보다 조회된 데이터가 적으면 더 이상 조회할 데이터가 없다고 판단 함
@@ -74,7 +78,7 @@ const queryScheduleDataFromServer = async (
       editButton: l("Edit"),
       deleteButton: l("Delete"),
     },
-  }
+  };
 
   return {
     lastVisible: nextLastVisible,
