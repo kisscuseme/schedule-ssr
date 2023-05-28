@@ -4,6 +4,7 @@ import { Col, Row } from "react-bootstrap";
 import {
   ChangeEvent,
   Dispatch,
+  KeyboardEvent,
   SetStateAction,
   useEffect,
   useRef,
@@ -24,6 +25,7 @@ export interface ScheduleInputFormProps {
   setScheduleInput: Dispatch<SetStateAction<ScheduleInputType>>;
   scheduleInputPlaceholder?: string;
   initValue?: string;
+  onKeyUpHandler?: (e: KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const InputRow = styled(Row)`
@@ -45,6 +47,7 @@ export const ScheduleInputForm = ({
   setScheduleInput,
   scheduleInputPlaceholder,
   initValue,
+  onKeyUpHandler,
 }: ScheduleInputFormProps) => {
   const scheduleClearButtonRef = useRef<HTMLButtonElement>(null);
   const [inputInitValue, setInputInitValue] = useState(initValue);
@@ -146,6 +149,9 @@ export const ScheduleInputForm = ({
                 ...scheduleInput,
                 schedule: "",
               });
+            }}
+            onKeyUp={(e: KeyboardEvent<HTMLInputElement>) => {
+              if (onKeyUpHandler) onKeyUpHandler(e);
             }}
           />
         </InputCol>

@@ -8,8 +8,12 @@ import {
   l,
   sortSchedulList,
 } from "@/services/util/util";
-import { useEffect, useState } from "react";
-import { ScheduleAddFormTextType, ScheduleInputType, ScheduleType } from "@/types/types";
+import { KeyboardEvent, useEffect, useState } from "react";
+import {
+  ScheduleAddFormTextType,
+  ScheduleInputType,
+  ScheduleType,
+} from "@/types/types";
 import { useMutation } from "@tanstack/react-query";
 import { insertScheduleData } from "@/services/firebase/db";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
@@ -73,7 +77,7 @@ export const ScheduleAddForm = ({
     },
   });
 
-  const changeSchedule = () => {
+  const addSchedule = () => {
     if (scheduleInput.schedule === "") {
       setShowModal({
         show: true,
@@ -95,6 +99,13 @@ export const ScheduleAddForm = ({
           toDate: getReformDate(scheduleInput.toDate, "."),
         },
       });
+    }
+  };
+
+  // 엔터 입력 시 버튼 클릭 효과
+  const enterKeyUpEventHandler = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      addSchedule();
     }
   };
 
@@ -122,11 +133,12 @@ export const ScheduleAddForm = ({
                 ? scheduleAddFormTextFromServer?.placeholder
                 : l("Enter your schedule.")
             }
+            onKeyUpHandler={enterKeyUpEventHandler}
           />
           <Row>
             <Col>
               <CustomButton
-                onClick={changeSchedule}
+                onClick={addSchedule}
                 backgroundColor="#3e3e3e"
                 color="#fefefe"
               >
