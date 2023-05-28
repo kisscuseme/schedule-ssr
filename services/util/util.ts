@@ -139,22 +139,33 @@ const deleteCookie = (name: string) => {
     encodeURIComponent(name) + "=; expires=Thu, 01 JAN 1999 00:00:10 GMT";
 };
 
+// 암복호화 사용 여부 (추후 사용 예정)
+const useEncrypt = false;
+
 // 시크릿 키 생성
 const getSecretKey = (key: string) => {
-  const encryptedSecretKey = CryptoJS.SHA256(key).toString();
-  const doubleEncryptedSecretKey = CryptoJS.SHA384(encryptedSecretKey).toString();
-  const tripleEncryptedSecretKey = CryptoJS.SHA512(doubleEncryptedSecretKey).toString();
-  return tripleEncryptedSecretKey;
-}
+  const encryptedSecretKey = CryptoJS.SHA224(key).toString();
+  const twoEncryptedSecretKey = CryptoJS.SHA256(encryptedSecretKey).toString();
+  const threeEncryptedSecretKey = CryptoJS.SHA384(
+    twoEncryptedSecretKey
+  ).toString();
+  const fourEncryptedSecretKey = CryptoJS.SHA512(
+    threeEncryptedSecretKey
+  ).toString();
+  return fourEncryptedSecretKey;
+};
 
 // 암호화
-export const encrypt = (payload: string, key: string) => {
+const encrypt = (payload: string, key: string) => {
   try {
-    if (!key) {
+    if (!useEncrypt || !key) {
       // console.log("No Key.");
       return payload;
     }
-    const encrypted = CryptoJS.AES.encrypt(payload, getSecretKey(key)).toString();
+    const encrypted = CryptoJS.AES.encrypt(
+      payload,
+      getSecretKey(key)
+    ).toString();
     return encrypted;
   } catch (e) {
     // console.log("Encryption error occur : ", e);
@@ -163,15 +174,15 @@ export const encrypt = (payload: string, key: string) => {
 };
 
 // 복호화
-export const decrypt = (encrypted: string, key: string) => {
+const decrypt = (encrypted: string, key: string) => {
   try {
-    if (!key) {
+    if (!useEncrypt || !key) {
       // console.log("No Key.");
       return encrypted;
     }
     const decrypted_bytes = CryptoJS.AES.decrypt(encrypted, getSecretKey(key));
     const decrypted = decrypted_bytes.toString(CryptoJS.enc.Utf8);
-    return decrypted||encrypted;
+    return decrypted.trim() || encrypted;
   } catch (e) {
     // console.log("Decryption error occur : ", e);
     return encrypted;
@@ -191,4 +202,6 @@ export {
   getCookie,
   setCookie,
   deleteCookie,
+  encrypt,
+  decrypt,
 };
