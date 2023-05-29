@@ -1,6 +1,9 @@
 import { ScheduleType } from "@/types/types";
 import { t } from "i18next";
 import CryptoJS from "crypto-js";
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 
 // 입력 받은 날짜로 요일 계산
 const getDay = (date: string) => {
@@ -33,10 +36,12 @@ const getReformDate = (date: string, dvsn: string) => {
 
 // 오늘 날짜 리턴
 const getToday = () => {
-  const now = new Date();
-  const year = now.getFullYear().toString();
-  const month = (now.getMonth() + 1).toString();
-  const date = now.getDate().toString();
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
+  const now = dayjs().tz('Asia/Seoul');
+  const year = now.year().toString();
+  const month = (now.month() + 1).toString();
+  const date = now.date().toString();
   const today =
     year + "-" + ("0" + month).slice(-2, 3) + "-" + ("0" + date).slice(-2, 3);
   return today;
