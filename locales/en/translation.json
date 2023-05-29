@@ -64,5 +64,6 @@
   "Invalid email format.": "Invalid email format.",
   "This account has already been created.": "This account has already been created.",
   "An error occurred while creating an account.": "An error occurred while creating an account.",
-  "An error occurred while logging out.": "An error occurred while logging out."
+  "An error occurred while logging out.": "An error occurred while logging out.",
+  "All data cannot be recovered.": "All data cannot be recovered."
 }

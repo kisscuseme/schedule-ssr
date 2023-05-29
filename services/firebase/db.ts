@@ -22,10 +22,12 @@ import { ScheduleType, WhereConfigType } from "@/types/types";
 // 한 번에 조회할 데이터 개수 제한
 const limitNumber = 15;
 
+// DB 루트 PATH
+const language: string = "KR";
+const dbRootPath: string = "language/" + language;
+
 // 데이터가 위치한 db path 생성
 const getFullPath = (uid: string) => {
-  const language: string = "KR";
-  const dbRootPath: string = "language/" + language;
   return dbRootPath + "/user/" + uid + "/schedule";
 };
 
@@ -156,7 +158,7 @@ const insertScheduleData = async (insertInfo: {
   return docRef.id;
 };
 
-// firebase 데이터 삭제
+// firebase schedule 데이터 삭제
 const deleteScheduleData = async (deleteInfo: {
   uid: string;
   scheduleId: string;

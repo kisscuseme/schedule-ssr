@@ -85,7 +85,7 @@ export default function ScheduleTopBar() {
   const deleteUserHandler = () => {
     setShowModal({
       title: l("Check"),
-      content: l("Are you sure you want to delete your account?"),
+      content: `${l("All data cannot be recovered.")} ${l("Are you sure you want to delete your account?")}`,
       show: true,
       confirm: () => {
         checkLogin().then((user) => {
