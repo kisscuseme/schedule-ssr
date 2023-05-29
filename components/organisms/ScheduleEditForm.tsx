@@ -219,8 +219,8 @@ export const ScheduleEditForm = ({
         <Col>
           <CustomButton
             onClick={resetChange}
-            color="#8e8e8e"
-            backgroundColor="#efefef"
+            color="#6e6e6e"
+            backgroundColor="#ffffff"
           >
             {firstLoading
               ? scheduleEditFormTextFromServer?.resetButton
