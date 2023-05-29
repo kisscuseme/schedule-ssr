@@ -57,7 +57,7 @@ const queryScheduleDataFromServer = async (
       id: result.id,
       date: reformDate,
       toDate: reformToDate,
-      content: decrypt(result.data()["content"], uid) || "",
+      content: decrypt(result.data()["content"], uid + result.id) || "",
     });
   });
   // 조회 개수 제한 값보다 조회된 데이터가 적으면 더 이상 조회할 데이터가 없다고 판단 함

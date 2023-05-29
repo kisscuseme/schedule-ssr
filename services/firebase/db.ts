@@ -85,7 +85,7 @@ const queryScheduleData = async (
       id: result.id,
       date: reformDate,
       toDate: reformToDate,
-      content: decrypt(result.data()["content"], uid) || "",
+      content: decrypt(result.data()["content"], uid + result.id) || "",
     });
   });
 
@@ -116,8 +116,10 @@ const updateScheduleData = async (updateInfo: {
       }
       if (updateInfo.newSchedule)
         updateInfo.newSchedule.content =
-          encrypt(updateInfo.newSchedule.content, updateInfo.uid) ||
-          updateInfo.newSchedule.content;
+          encrypt(
+            updateInfo.newSchedule.content,
+            updateInfo.uid + updateInfo.scheduleId
+          ) || updateInfo.newSchedule.content;
       const updateSchedule = {
         ...scheduleDoc.data(),
         ...updateInfo.newSchedule,
@@ -144,7 +146,7 @@ const insertScheduleData = async (insertInfo: {
   const scheduleRef = doc(firebaseDb, fullPath, docRef.id);
   if (insertInfo.newSchedule)
     insertInfo.newSchedule.content =
-      encrypt(insertInfo.newSchedule.content, insertInfo.uid) ||
+      encrypt(insertInfo.newSchedule.content, insertInfo.uid + docRef.id) ||
       insertInfo.newSchedule.content;
   batch.set(scheduleRef, insertInfo.newSchedule);
 

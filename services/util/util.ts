@@ -139,20 +139,12 @@ const deleteCookie = (name: string) => {
     encodeURIComponent(name) + "=; expires=Thu, 01 JAN 1999 00:00:10 GMT";
 };
 
-// 암복호화 사용 여부 (추후 사용 예정)
-const useEncrypt = false;
+// 암복호화 사용 여부
+const useEncrypt = true;
 
 // 시크릿 키 생성
 const getSecretKey = (key: string) => {
-  const encryptedSecretKey = CryptoJS.SHA224(key).toString();
-  const twoEncryptedSecretKey = CryptoJS.SHA256(encryptedSecretKey).toString();
-  const threeEncryptedSecretKey = CryptoJS.SHA384(
-    twoEncryptedSecretKey
-  ).toString();
-  const fourEncryptedSecretKey = CryptoJS.SHA512(
-    threeEncryptedSecretKey
-  ).toString();
-  return fourEncryptedSecretKey;
+  return CryptoJS.SHA256(key).toString();
 };
 
 // 암호화
