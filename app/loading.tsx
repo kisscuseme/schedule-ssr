@@ -1,12 +1,12 @@
 "use client";
 
 import { CenterScreen } from "@/components/molecules/CenterScreen";
-import { Spinner } from "react-bootstrap";
+import { CustomSpinner } from "@/components/molecules/CustomMolecules";
 
 const LoadingPage = () => {
   return (
     <CenterScreen>
-      <Spinner animation="border" />
+      <CustomSpinner animation="border" />
     </CenterScreen>
   );
 };

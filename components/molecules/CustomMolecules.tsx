@@ -1,3 +1,6 @@
+import { Spinner } from "react-bootstrap";
+import { styled } from "styled-components";
+
 // Accordion 스타일 오버라이딩 (더 나은 방법 찾는 중)
 export const accordionCustomStyle = `
   .accordion {
@@ -50,4 +53,10 @@ export const accordionCustomStyle = `
   .accordion-collapse .collapsing {
     overflow: auto;
   }
+`;
+
+export const CustomSpinner = styled(Spinner)`
+  margin: auto;
+  display: flex;
+  color: #90a1ff;
 `;

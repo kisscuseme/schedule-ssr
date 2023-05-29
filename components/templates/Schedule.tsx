@@ -17,7 +17,7 @@ import {
   sortSchedulList,
 } from "@/services/util/util";
 import { ReactNode, useEffect, useRef, useState } from "react";
-import { Accordion, Col, Row, Spinner } from "react-bootstrap";
+import { Accordion, Col, Row } from "react-bootstrap";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   reloadDataState,
@@ -28,7 +28,6 @@ import {
 } from "@/states/states";
 import { CenterCol } from "../atoms/CustomAtoms";
 import { ScheduleAddForm } from "../organisms/ScheduleAddForm";
-import { styled } from "styled-components";
 import { ScheduleEditForm } from "../organisms/ScheduleEditForm";
 import TranslationFromClient from "../organisms/TranslationFromClient";
 import {
@@ -40,7 +39,10 @@ import ScheduleTopBar from "../organisms/ScheduleTopBar";
 import { useQuery } from "@tanstack/react-query";
 import { CustomButton } from "../atoms/CustomButton";
 import { DivisionLine } from "../molecules/DefaultMolecules";
-import { accordionCustomStyle } from "../molecules/CustomMolecules";
+import {
+  accordionCustomStyle,
+  CustomSpinner,
+} from "../molecules/CustomMolecules";
 
 // schedule component props
 export interface ScheduleProps {
@@ -50,12 +52,6 @@ export interface ScheduleProps {
     componentsText: ComponentsTextType;
   };
 }
-
-const CustomSpinner = styled(Spinner)`
-  margin: auto;
-  display: flex;
-  color: #bfbfbf;
-`;
 
 export default function Schedule({ scheduleDataFromServer }: ScheduleProps) {
   const [scheduleList, setScheduleList] = useState<ScheduleType[]>([]);
@@ -142,7 +138,18 @@ export default function Schedule({ scheduleDataFromServer }: ScheduleProps) {
         <Accordion.Header>
           <Col xs={5}>
             <Row>
-              <div>
+              <div
+                style={{
+                  opacity:
+                    Number(getReformDate(value?.date || getToday(), "")) >
+                    Number(getReformDate(getToday(), ""))
+                      ? "0.7"
+                      : Number(getReformDate(value?.date || getToday(), "")) <
+                        Number(getReformDate(getToday(), ""))
+                      ? "0.3"
+                      : "1.0",
+                }}
+              >
                 {firstLoading
                   ? value?.date
                   : `${getReformDate(value?.date || "", ".")} (${l(
@@ -153,7 +160,21 @@ export default function Schedule({ scheduleDataFromServer }: ScheduleProps) {
             {value?.toDate && value?.date !== value?.toDate && (
               <>
                 <Row>
-                  <div style={{ fontSize: "14px", color: "#6e6e6e" }}>
+                  <div
+                    style={{
+                      fontSize: "14px",
+                      color: "#9e9e9e",
+                      opacity:
+                        Number(getReformDate(value?.date || getToday(), "")) >
+                        Number(getReformDate(getToday(), ""))
+                          ? "0.7"
+                          : Number(
+                              getReformDate(value?.date || getToday(), "")
+                            ) < Number(getReformDate(getToday(), ""))
+                          ? "0.3"
+                          : "1.0",
+                    }}
+                  >
                     {firstLoading
                       ? `~ ${value?.toDate}`
                       : `~ ${getReformDate(value?.toDate || "", ".")} (${l(
@@ -165,7 +186,21 @@ export default function Schedule({ scheduleDataFromServer }: ScheduleProps) {
             )}
           </Col>
           <Col>
-            <div style={{ wordBreak: "break-all" }}>{value?.content}</div>
+            <div
+              style={{
+                wordBreak: "break-all",
+                opacity:
+                  Number(getReformDate(value?.date || getToday(), "")) >
+                  Number(getReformDate(getToday(), ""))
+                    ? "0.7"
+                    : Number(getReformDate(value?.date || getToday(), "")) <
+                      Number(getReformDate(getToday(), ""))
+                    ? "0.3"
+                    : "1.0",
+              }}
+            >
+              {value?.content}
+            </div>
           </Col>
         </Accordion.Header>
         <Accordion.Body>
@@ -344,6 +379,7 @@ export default function Schedule({ scheduleDataFromServer }: ScheduleProps) {
                   onClick={() => {
                     setLastVisible(nextLastVisible);
                   }}
+                  color="#90a1ff"
                 >
                   {l("Load More")}
                 </CustomButton>

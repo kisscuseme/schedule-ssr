@@ -24,6 +24,7 @@ const getReformDate = (date: string, dvsn: string) => {
     reformDate = reformDate.replaceAll("-", dvsn);
     if (dvsn === "-") reformDate = reformDate.substring(0, 10);
     if (dvsn === ".") reformDate = reformDate.substring(0, 10);
+    if (dvsn === "") reformDate = reformDate.substring(0, 8);
     return reformDate;
   } else {
     return "";
