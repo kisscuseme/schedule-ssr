@@ -31,6 +31,12 @@ const getFullPath = (uid: string) => {
   return dbRootPath + "/user/" + uid + "/schedule";
 };
 
+// user db path 생성
+const getUserPath = () => {
+  return dbRootPath + "/user";
+};
+
+
 // firestore의 where 조건 생성
 const makeRangeQuery = (whereConfig: WhereConfigType[]) => {
   const conditions = [];
@@ -175,6 +181,29 @@ const deleteScheduleData = async (deleteInfo: {
   await batch.commit();
 };
 
+// firebase 삭제 계정 표시
+const markDeletedAccount = async (deletedUserInfo: {
+  uid: string;
+}) => {
+  try {
+    const userPath = getUserPath();
+  
+    // Get a new write batch
+    const batch = writeBatch(firebaseDb);
+  
+    const userRef = doc(firebaseDb, userPath, deletedUserInfo.uid);
+    batch.set(userRef, {status: "deleted"});
+  
+    // Commit the batch
+    await batch.commit();
+  
+    return true;
+  } catch(error: any) {
+    console.log(error);
+    return false;
+  }
+};
+
 export {
   queryScheduleData,
   getFullPath,
@@ -183,4 +212,5 @@ export {
   deleteScheduleData,
   limitNumber,
   getLastVisible,
+  markDeletedAccount
 };

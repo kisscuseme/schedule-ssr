@@ -17,6 +17,7 @@ import { TopBar } from "../molecules/TopBar";
 import { DivisionLine } from "../molecules/DefaultMolecules";
 import { LanguageSelectorForClient } from "./LanguageSelectorForClient";
 import { styled } from "styled-components";
+import { markDeletedAccount } from "@/services/firebase/db";
 
 const NavbarOffcanvas = styled(Navbar.Offcanvas)`
   font-family: "GangwonEdu_OTFBoldA";
@@ -82,15 +83,22 @@ export default function ScheduleTopBar() {
     },
   });
 
+  // 삭제된 계정 표시 react query 활용
+  const markDeletedAccountMutation = useMutation(markDeletedAccount, {
+    onSuccess() {
+      checkLogin().then((user) => {
+        if (user) deleteUserMutation.mutate(user);
+      });
+    },
+  });
+
   const deleteUserHandler = () => {
     setShowModal({
       title: l("Check"),
       content: `${l("All data cannot be recovered.")} ${l("Are you sure you want to delete your account?")}`,
       show: true,
       confirm: () => {
-        checkLogin().then((user) => {
-          if (user) deleteUserMutation.mutate(user);
-        });
+        markDeletedAccountMutation.mutate({uid: userInfo?.uid||""});
       },
     });
   };
