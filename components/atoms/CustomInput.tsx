@@ -63,9 +63,10 @@ const CustomFormControl = styled(FormControl)`
   border-radius: 0;
   &:focus {
     box-shadow: unset;
+    background-color: transparent;
   }
   &::placeholder {
-    color: #bfbfbf;
+    color: #afafaf;
   }
 `;
 

@@ -287,6 +287,7 @@ export const SignInForm = ({
               type="button"
               onClick={resetPasswordClickHandler}
               align="center"
+              color="#5f5f5f"
             >
               {resetPasswordButtonText}
             </GroupButton>
@@ -294,6 +295,7 @@ export const SignInForm = ({
               type="button"
               onClick={signUpClickHandler}
               align="center"
+              color="#5f5f5f"
             >
               {signUpButtonText}
             </GroupButton>
