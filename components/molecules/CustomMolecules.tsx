@@ -39,8 +39,10 @@ export const accordionCustomStyle = `
     --bs-accordion-active-bg: transparent;
   }
 
-  .accordion-button:hover {
-    color: #5e5e5e;
+  @media (hover: hover) and (pointer: fine) {
+    .accordion-button:hover {
+      color: #5e5e5e;
+    }
   }
   
   .accordion-button::after {
