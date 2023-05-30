@@ -35,25 +35,8 @@ const SchedulePage = async () => {
       return <Schedule scheduleDataFromServer={result} />;
     } else {
       return (
-        // 인증 정보 없을 경우 기본 값
-        <Schedule
-          scheduleDataFromServer={{
-            dataList: [],
-            lastVisible: null,
-            componentsText: {
-              scheduleAddForm: {
-                button: "Add",
-                placeholder: "Enter your schedule.",
-                title: "Enter schedule",
-              },
-              scheduleEditForm: {
-                deleteButton: "Delete",
-                editButton: "Edit",
-                resetButton: "Reset",
-              },
-            },
-          }}
-        />
+        // 인증 정보 없을 경우 루트 페이지로 이동
+        <Home />
       );
     }
   } catch (error: any) {
