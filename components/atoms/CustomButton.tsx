@@ -43,7 +43,7 @@ export const CustomButton = forwardRef(
   (
     {
       align = "right",
-      color = "#000000",
+      color = "#3e3e3e",
       backgroundColor = "transparent",
       ...props
     }: CustomButtonProps,

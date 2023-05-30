@@ -146,7 +146,7 @@ export default function Schedule({ scheduleDataFromServer }: ScheduleProps) {
                       ? "0.7"
                       : Number(getReformDate(value?.date || getToday(), "")) <
                         Number(getReformDate(getToday(), ""))
-                      ? "0.3"
+                      ? "0.4"
                       : "1.0",
                 }}
               >
@@ -171,7 +171,7 @@ export default function Schedule({ scheduleDataFromServer }: ScheduleProps) {
                           : Number(
                               getReformDate(value?.date || getToday(), "")
                             ) < Number(getReformDate(getToday(), ""))
-                          ? "0.3"
+                          ? "0.4"
                           : "1.0",
                     }}
                   >
@@ -195,7 +195,7 @@ export default function Schedule({ scheduleDataFromServer }: ScheduleProps) {
                     ? "0.7"
                     : Number(getReformDate(value?.date || getToday(), "")) <
                       Number(getReformDate(getToday(), ""))
-                    ? "0.3"
+                    ? "0.4"
                     : "1.0",
               }}
             >
@@ -252,7 +252,7 @@ export default function Schedule({ scheduleDataFromServer }: ScheduleProps) {
     retry: 0,
     onSuccess: (data) => {
       if (data) {
-        // 조회 성공 시 중복 데이터 제거 (추가된 데이터가 있을 경우 db 재조회를 하지 않고 걸러내기 위함)
+        // 조회 성공 시 중복 데이터 제거 (추가/변경된 데이터가 있을 경우 db 재조회를 하지 않고 걸러내기 위함)
         const tempList = [...scheduleList, ...data.dataList];
         const uniqueList = tempList.filter((value1, index) => {
           return (
@@ -374,12 +374,12 @@ export default function Schedule({ scheduleDataFromServer }: ScheduleProps) {
               !noMoreData &&
               (allowLoading && !isLoading ? (
                 <CustomButton
+                  color="#90a1ff"
                   align="center"
                   ref={buttonRef}
                   onClick={() => {
                     setLastVisible(nextLastVisible);
                   }}
-                  color="#90a1ff"
                 >
                   {l("Load More")}
                 </CustomButton>

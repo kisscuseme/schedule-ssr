@@ -8,7 +8,7 @@ const SignUpPage = async () => {
     const token = await admin
         .auth()
         .verifyIdToken(cookies().get("token")?.value || "");
-      if (token.uid !== "") {
+      if (token.uid) {
         return <Home />
       } else {
         return <SignUp />;
