@@ -11,7 +11,7 @@ const SchedulePage = async () => {
     const token = await admin
       .auth()
       .verifyIdToken(cookies().get("token")?.value || "");
-    if (token.uid !== "") {
+    if (token.uid) {
       const selectedYear = getToday().substring(0, 4);
       const yearRange = getYearRange(selectedYear);
 
@@ -40,11 +40,14 @@ const SchedulePage = async () => {
       );
     }
   } catch (error: any) {
+    console.log(error);
     if (error.code === "auth/id-token-expired") {
       // 토큰 만료 시 루트 페이지로 이동
       return <Home />;
     } else {
       console.log(error.message);
+      // 다른 에러도 루트 페이지로 이동 (딱히 다른 대안이 없음)
+      return <Home />;
     }
   }
 };
