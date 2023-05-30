@@ -12,7 +12,7 @@ export const metadata = {
   openGraph: {
     title: "SCHEDULE",
     description: "Manage your schedule",
-    images: "/logo.png",
+    images: "/images/logo.png",
   },
 };
 
@@ -59,8 +59,13 @@ export default function RootLayout({
         />
 
         <link rel="manifest" href="/manifest.json" />
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png"></link>
+        <link rel="apple-touch-icon" href="/images/icons/icon-192x192.png"></link>
         <meta name="msapplication-TileColor" content="#99aaf6"></meta>
+        <link
+          href="/images/favicon.ico"
+          rel="icon"
+          sizes="16x16"
+        />
       </head>
       <body>
         <TranslationFromServer />
