@@ -57,6 +57,10 @@ export default function RootLayout({
           href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEdu_OTFBoldA.woff"
           crossOrigin="anonymous"
         />
+
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png"></link>
+        <meta name="msapplication-TileColor" content="#99aaf6"></meta>
       </head>
       <body>
         <TranslationFromServer />
