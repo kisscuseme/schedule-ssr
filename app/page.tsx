@@ -3,6 +3,7 @@
 import { checkLogin } from "@/services/firebase/auth";
 import { setCookie } from "@/services/util/util";
 import { useEffect } from "react";
+import LoadingPage from "./loading";
 
 const Home = () => {
   useEffect(() => {
@@ -28,7 +29,7 @@ const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <></>;
+  return <LoadingPage></LoadingPage>;
 };
 
 export default Home;
