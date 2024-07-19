@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     theme_color: "#99aaf6",
     background_color: "#99aaf6",
-    display: "minimal-ui",
+    display: "fullscreen",
     orientation: "portrait",
     scope: "/",
     start_url: "/",
